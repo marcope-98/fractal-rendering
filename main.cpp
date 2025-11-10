@@ -1,4 +1,4 @@
-#include <iostream>
+#include <cstdint>
 
 #include "raylib.h"
 #include "raymath.h"
@@ -58,29 +58,42 @@ private:
 
 int main(void)
 {
-  InitWindow(1280, 720, "Fractal Rendering");
-  CameraManager cm;
+  constexpr std::size_t width  = 1280;
+  constexpr std::size_t height = 720;
+  uint8_t *             data   = new uint8_t[width * height]();
+  Image                 image  = {
+      data,                               /* data */
+      width,                              /* width */
+      height,                             /* height */
+      PIXELFORMAT_UNCOMPRESSED_GRAYSCALE, /* format */
+      1 /* mipmaps */};
 
+  InitWindow(width, height, "Fractal Rendering");
+  CameraManager cm;
+  Texture2D     texture = LoadTextureFromImage(image);
   while (!WindowShouldClose())
   {
+    // User Input
     if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) cm.reset();
     if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) cm.pan();
     if (float wheel = GetMouseWheelMove(); wheel != 0) cm.zoom(wheel);
     cm.bound();
 
+    // Fractal computation
+
+    // Update Texture with new screen buffer
+    UpdateTexture(texture, (unsigned char *)data);
+    // Draw Texture
     BeginDrawing();
-
-    ClearBackground(RAYWHITE);
-
     BeginMode2D(cm.camera);
-    DrawRectangle(0.f, 0.f, GetScreenWidth(), GetScreenHeight(), MAROON);
-    DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 50, BLACK);
+    DrawTexture(texture, 0, 0, WHITE);
     EndMode2D();
-
-    DrawCircleV(GetMousePosition(), 4, DARKGRAY);
-
     EndDrawing();
   }
+
+  // Clean up
+  UnloadTexture(texture);
   CloseWindow();
+  delete[] data;
   return 0;
 }
