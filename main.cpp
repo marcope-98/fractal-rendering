@@ -1,7 +1,12 @@
+#include <chrono>
 #include <cstdint>
+#include <string>
 
 #include "raylib.h"
 #include "raymath.h"
+
+#include "frr/common.hpp"
+#include "frr/naive.hpp"
 
 class CameraManager
 {
@@ -44,6 +49,9 @@ public:
     this->camera.target = Vector2Subtract(this->camera.target, boundary);
   }
 
+  Vector2 getTL() const { return GetScreenToWorld2D(this->world_lower_bound, camera); }
+  Vector2 getBR() const { return GetScreenToWorld2D(this->world_upper_bound, camera); }
+
   void reset()
   {
     this->camera.zoom   = 1.f;
@@ -53,22 +61,22 @@ public:
 
 private:
   const Vector2 world_lower_bound{0.f, 0.f};
-  const Vector2 world_upper_bound{(float)GetScreenWidth(), (float)GetScreenHeight()};
+  const Vector2 world_upper_bound{frr::width, frr::height};
 };
 
 int main(void)
 {
-  constexpr std::size_t width  = 1280;
-  constexpr std::size_t height = 720;
-  uint8_t *             data   = new uint8_t[width * height]();
-  Image                 image  = {
+  std::size_t max_iterations{64};
+  uint8_t *   data  = new uint8_t[frr::width * frr::height]();
+  Image       image = {
       data,                               /* data */
-      width,                              /* width */
-      height,                             /* height */
+      frr::width,                         /* width */
+      frr::height,                        /* height */
       PIXELFORMAT_UNCOMPRESSED_GRAYSCALE, /* format */
-      1 /* mipmaps */};
+      1                                   /* mipmaps */
+  };
 
-  InitWindow(width, height, "Fractal Rendering");
+  InitWindow(frr::width, frr::height, "Fractal Rendering");
   CameraManager cm;
   Texture2D     texture = LoadTextureFromImage(image);
   while (!WindowShouldClose())
@@ -78,16 +86,22 @@ int main(void)
     if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) cm.pan();
     if (float wheel = GetMouseWheelMove(); wheel != 0) cm.zoom(wheel);
     cm.bound();
+    if (IsKeyPressed(KEY_KP_ADD)) max_iterations *= 2;
+    if (IsKeyPressed(KEY_KP_SUBTRACT)) max_iterations /= 2;
 
     // Fractal computation
 
+    auto begin = std::chrono::steady_clock::now();
+    frr::naive(data, cm.getTL(), cm.getBR(), max_iterations);
+    auto end = std::chrono::steady_clock::now();
     // Update Texture with new screen buffer
-    UpdateTexture(texture, (unsigned char *)data);
+    UpdateTexture(texture, data);
     // Draw Texture
     BeginDrawing();
-    BeginMode2D(cm.camera);
     DrawTexture(texture, 0, 0, WHITE);
-    EndMode2D();
+    DrawText((std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()) + " [ms] | " + std::to_string(max_iterations)).c_str(),
+             0, 0, 20, RAYWHITE);
+    // DrawFPS(0, 0);
     EndDrawing();
   }
 
