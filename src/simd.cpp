@@ -1,0 +1,69 @@
+#include "frr/simd.hpp"
+#include "frr/common.hpp"
+
+#include <cstdint>
+#include <immintrin.h>
+
+union avx_register
+{
+  __m256i       avx;
+  std::uint64_t dbls[4];
+};
+
+auto frr::simd(uint8_t *const data,
+               const Vector2 TL, const Vector2 BR,
+               const std::size_t max_iteration) -> void
+{
+  constexpr double w              = (double)frr::width;
+  constexpr double h              = (double)frr::height;
+  constexpr double x0_factor      = 3.0 / w;
+  constexpr double y0_factor      = 2.0 / h;
+  constexpr double x_delta_factor = 3.0 / (w * w);
+  constexpr double y_delta_factor = 2.0 / (h * h);
+
+  const __m256i FF       = _mm256_set1_epi64x(0xFFull);
+  const __m256i one      = _mm256_set1_epi64x(1);
+  const __m256d two      = _mm256_set1_pd(2.0);
+  const __m256d four     = _mm256_set1_pd(4.0);
+  const __m256i max_iter = _mm256_set1_epi64x(max_iteration);
+
+  const __m256d x_delta  = _mm256_set1_pd((BR.x - TL.x) * x_delta_factor);
+  const __m256d y_delta  = _mm256_set1_pd((BR.y - TL.y) * y_delta_factor);
+  const __m256d x_origin = _mm256_add_pd(_mm256_set1_pd(TL.x * x0_factor - 2.0), _mm256_mul_pd(x_delta, _mm256_set_pd(0.0, 1.0, 2.0, 3.0)));
+  __m256d       y0       = _mm256_set1_pd(TL.y * y0_factor - 1.0);
+  avx_register  result;
+  for (std::size_t row{}; row < frr::height; ++row)
+  {
+    __m256d x0 = x_origin;
+    for (std::size_t col{}; col < frr::width; col += 4)
+    {
+      __m256d x = _mm256_setzero_pd(), y = _mm256_setzero_pd();
+      __m256d x2 = _mm256_setzero_pd(), y2 = _mm256_setzero_pd();
+      __m256i iteration = _mm256_setzero_si256();
+      __m256d condition1;
+      __m256i condition2, increment;
+
+    loop:
+      y          = _mm256_fmadd_pd(two, _mm256_mul_pd(x, y), y0);
+      x          = _mm256_add_pd(_mm256_sub_pd(x2, y2), x0);
+      x2         = _mm256_mul_pd(x, x);
+      y2         = _mm256_mul_pd(y, y);
+      condition1 = _mm256_cmp_pd(_mm256_add_pd(x2, y2), four, _CMP_LE_OS);
+      condition2 = _mm256_cmpgt_epi64(max_iter, iteration);
+      condition2 = _mm256_and_si256(_mm256_castpd_si256(condition1), condition2);
+      increment  = _mm256_and_si256(one, condition2);
+      iteration  = _mm256_add_epi64(iteration, increment);
+      if (_mm256_movemask_pd(_mm256_castsi256_pd(condition2)) > 0)
+        goto loop;
+
+      iteration                        = _mm256_and_si256(iteration, FF);
+      result.avx                       = iteration;
+      data[row * frr::width + col + 0] = (uint8_t)result.dbls[3];
+      data[row * frr::width + col + 1] = (uint8_t)result.dbls[2];
+      data[row * frr::width + col + 2] = (uint8_t)result.dbls[1];
+      data[row * frr::width + col + 3] = (uint8_t)result.dbls[0];
+      x0                               = _mm256_add_pd(x0, _mm256_mul_pd(x_delta, four));
+    }
+    y0 = _mm256_add_pd(y0, y_delta);
+  }
+}
