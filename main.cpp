@@ -7,6 +7,7 @@
 
 #include "frr/common.hpp"
 #include "frr/naive.hpp"
+#include "frr/simd.hpp"
 
 class CameraManager
 {
@@ -78,7 +79,8 @@ int main(void)
 
   InitWindow(frr::width, frr::height, "Fractal Rendering");
   CameraManager cm;
-  Texture2D     texture = LoadTextureFromImage(image);
+  Texture2D     texture          = LoadTextureFromImage(image);
+  int           last_key_pressed = KEY_NULL;
   while (!WindowShouldClose())
   {
     // User Input
@@ -88,11 +90,20 @@ int main(void)
     cm.bound();
     if (IsKeyPressed(KEY_KP_ADD)) max_iterations *= 2;
     if (IsKeyPressed(KEY_KP_SUBTRACT)) max_iterations /= 2;
-
+    if (int key = GetKeyPressed(); KEY_ONE <= key && key <= KEY_TWO) last_key_pressed = key;
     // Fractal computation
-
     auto begin = std::chrono::steady_clock::now();
-    frr::naive(data, cm.getTL(), cm.getBR(), max_iterations);
+    switch (last_key_pressed)
+    {
+      case KEY_ONE:
+        frr::naive(data, cm.getTL(), cm.getBR(), max_iterations);
+        break;
+      case KEY_TWO:
+        frr::simd(data, cm.getTL(), cm.getBR(), max_iterations);
+        break;
+      default:
+        frr::naive(data, cm.getTL(), cm.getBR(), max_iterations);
+    }
     auto end = std::chrono::steady_clock::now();
     // Update Texture with new screen buffer
     UpdateTexture(texture, data);
