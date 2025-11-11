@@ -1,18 +1,21 @@
 #include "frr/naive.hpp"
 #include "frr/common.hpp"
 
-#include <cmath>
-
 auto frr::naive(uint8_t *const data,
                 const Vector2 TL, const Vector2 BR,
                 const std::size_t max_iteration) -> void
 {
-  const double w        = (double)frr::width;
-  const double h        = (double)frr::height;
-  const double x_delta  = (BR.x - TL.x) * 3.0 / (w * w);
-  const double y_delta  = (BR.y - TL.y) * 2.0 / (h * h);
-  const double x_origin = (TL.x * 3.0 / w) - 2.0;
-  double       y0       = (TL.y * 2.0 / h) - 1.0;
+  constexpr double w              = (double)frr::width;
+  constexpr double h              = (double)frr::height;
+  constexpr double x0_factor      = 3.0 / w;
+  constexpr double y0_factor      = 2.0 / h;
+  constexpr double x_delta_factor = 3.0 / (w * w);
+  constexpr double y_delta_factor = 2.0 / (h * h);
+
+  const double x_delta  = (BR.x - TL.x) * x_delta_factor;
+  const double y_delta  = (BR.y - TL.y) * y_delta_factor;
+  const double x_origin = TL.x * x0_factor - 2.0;
+  double       y0       = TL.y * y0_factor - 1.0;
   for (std::size_t row{}; row < frr::height; ++row)
   {
     double x0 = x_origin;
