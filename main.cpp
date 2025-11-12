@@ -112,7 +112,6 @@ int main(void)
     DrawTexture(texture, 0, 0, WHITE);
     DrawText((std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()) + " [ms] | " + std::to_string(max_iterations)).c_str(),
              0, 0, 20, RAYWHITE);
-    // DrawFPS(0, 0);
     EndDrawing();
   }
 
