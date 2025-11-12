@@ -5,7 +5,7 @@
 #include "raylib.h"
 namespace frr
 {
-  auto naive(uint8_t *const data,
+  auto naive(std::uint8_t *const data,
              const Vector2 TL, const Vector2 BR,
              const std::size_t max_iteration) -> void;
 

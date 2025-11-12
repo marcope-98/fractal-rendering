@@ -1,9 +1,7 @@
 #include "frr/naive.hpp"
 #include "frr/common.hpp"
 
-#include <cstdint>
-
-auto frr::naive(uint8_t *const data,
+auto frr::naive(std::uint8_t *const data,
                 const Vector2 TL, const Vector2 BR,
                 const std::size_t max_iteration) -> void
 {
@@ -33,7 +31,7 @@ auto frr::naive(uint8_t *const data,
         y2 = y * y;
         ++iteration;
       }
-      data[row * frr::width + col] = static_cast<std::uint8_t>(iteration % 255u);
+      data[row * frr::width + col] = frr::palette[iteration % 32u];
       x0 += x_delta;
     }
     y0 += y_delta;

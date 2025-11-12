@@ -1,10 +1,9 @@
 #include "frr/simd.hpp"
 #include "frr/common.hpp"
 
-#include <cstdint>
 #include <immintrin.h>
 
-auto frr::simd(uint8_t *const data,
+auto frr::simd(std::uint8_t *const data,
                const Vector2 TL, const Vector2 BR,
                const std::size_t max_iteration) -> void
 {
@@ -15,7 +14,7 @@ auto frr::simd(uint8_t *const data,
   constexpr double x_delta_factor = 3.0 / (w * w);
   constexpr double y_delta_factor = 2.0 / (h * h);
 
-  const __m256i FF       = _mm256_set1_epi64x(0xFFull);
+  const __m256i FF       = _mm256_set1_epi64x(0x1Full);
   const __m256i one      = _mm256_set1_epi64x(1);
   const __m256d two      = _mm256_set1_pd(2.0);
   const __m256d four     = _mm256_set1_pd(4.0);
@@ -52,10 +51,10 @@ auto frr::simd(uint8_t *const data,
         goto loop;
 
       iteration                        = _mm256_and_si256(iteration, FF);
-      data[row * frr::width + col + 0] = static_cast<std::uint8_t>(_mm256_extract_epi64(iteration, 0));
-      data[row * frr::width + col + 1] = static_cast<std::uint8_t>(_mm256_extract_epi64(iteration, 1));
-      data[row * frr::width + col + 2] = static_cast<std::uint8_t>(_mm256_extract_epi64(iteration, 2));
-      data[row * frr::width + col + 3] = static_cast<std::uint8_t>(_mm256_extract_epi64(iteration, 3));
+      data[row * frr::width + col + 0] = frr::palette[_mm256_extract_epi64(iteration, 0)];
+      data[row * frr::width + col + 1] = frr::palette[_mm256_extract_epi64(iteration, 1)];
+      data[row * frr::width + col + 2] = frr::palette[_mm256_extract_epi64(iteration, 2)];
+      data[row * frr::width + col + 3] = frr::palette[_mm256_extract_epi64(iteration, 3)];
       x0                               = _mm256_add_pd(x0, x_step);
     }
     y0 = _mm256_add_pd(y0, y_delta);
