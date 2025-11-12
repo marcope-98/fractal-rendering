@@ -14,8 +14,8 @@ auto frr::simd(uint8_t *const data,
                const Vector2 TL, const Vector2 BR,
                const std::size_t max_iteration) -> void
 {
-  constexpr double w              = (double)frr::width;
-  constexpr double h              = (double)frr::height;
+  constexpr double w              = static_cast<double>(frr::width);
+  constexpr double h              = static_cast<double>(frr::height);
   constexpr double x0_factor      = 3.0 / w;
   constexpr double y0_factor      = 2.0 / h;
   constexpr double x_delta_factor = 3.0 / (w * w);
@@ -58,10 +58,10 @@ auto frr::simd(uint8_t *const data,
 
       iteration                        = _mm256_and_si256(iteration, FF);
       result.avx                       = iteration;
-      data[row * frr::width + col + 0] = (uint8_t)result.dbls[3];
-      data[row * frr::width + col + 1] = (uint8_t)result.dbls[2];
-      data[row * frr::width + col + 2] = (uint8_t)result.dbls[1];
-      data[row * frr::width + col + 3] = (uint8_t)result.dbls[0];
+      data[row * frr::width + col + 0] = static_cast<std::uint8_t>(result.dbls[3]);
+      data[row * frr::width + col + 1] = static_cast<std::uint8_t>(result.dbls[2]);
+      data[row * frr::width + col + 2] = static_cast<std::uint8_t>(result.dbls[1]);
+      data[row * frr::width + col + 3] = static_cast<std::uint8_t>(result.dbls[0]);
       x0                               = _mm256_add_pd(x0, _mm256_mul_pd(x_delta, four));
     }
     y0 = _mm256_add_pd(y0, y_delta);

@@ -1,12 +1,14 @@
 #include "frr/naive.hpp"
 #include "frr/common.hpp"
 
+#include <cstdint>
+
 auto frr::naive(uint8_t *const data,
                 const Vector2 TL, const Vector2 BR,
                 const std::size_t max_iteration) -> void
 {
-  constexpr double w              = (double)frr::width;
-  constexpr double h              = (double)frr::height;
+  constexpr double w              = static_cast<double>(frr::width);
+  constexpr double h              = static_cast<double>(frr::height);
   constexpr double x0_factor      = 3.0 / w;
   constexpr double y0_factor      = 2.0 / h;
   constexpr double x_delta_factor = 3.0 / (w * w);
@@ -31,7 +33,7 @@ auto frr::naive(uint8_t *const data,
         y2 = y * y;
         ++iteration;
       }
-      data[row * frr::width + col] = iteration % 255u;
+      data[row * frr::width + col] = static_cast<std::uint8_t>(iteration % 255u);
       x0 += x_delta;
     }
     y0 += y_delta;
