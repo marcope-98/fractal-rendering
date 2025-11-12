@@ -4,12 +4,6 @@
 #include <cstdint>
 #include <immintrin.h>
 
-union avx_register
-{
-  __m256i       avx;
-  std::uint64_t dbls[4];
-};
-
 auto frr::simd(uint8_t *const data,
                const Vector2 TL, const Vector2 BR,
                const std::size_t max_iteration) -> void
@@ -30,9 +24,9 @@ auto frr::simd(uint8_t *const data,
   const __m256d x_delta  = _mm256_set1_pd((BR.x - TL.x) * x_delta_factor);
   const __m256d y_delta  = _mm256_set1_pd((BR.y - TL.y) * y_delta_factor);
   const __m256d x_step   = _mm256_mul_pd(x_delta, four);
-  const __m256d x_origin = _mm256_add_pd(_mm256_set1_pd(TL.x * x0_factor - 2.0), _mm256_mul_pd(x_delta, _mm256_set_pd(0.0, 1.0, 2.0, 3.0)));
+  const __m256d x_origin = _mm256_add_pd(_mm256_set1_pd(TL.x * x0_factor - 2.0),
+                                         _mm256_mul_pd(x_delta, _mm256_set_pd(3.0, 2.0, 1.0, 0.0)));
   __m256d       y0       = _mm256_set1_pd(TL.y * y0_factor - 1.0);
-  avx_register  result;
   for (std::size_t row{}; row < frr::height; ++row)
   {
     __m256d x0 = x_origin;
@@ -58,11 +52,10 @@ auto frr::simd(uint8_t *const data,
         goto loop;
 
       iteration                        = _mm256_and_si256(iteration, FF);
-      result.avx                       = iteration;
-      data[row * frr::width + col + 0] = static_cast<std::uint8_t>(result.dbls[3]);
-      data[row * frr::width + col + 1] = static_cast<std::uint8_t>(result.dbls[2]);
-      data[row * frr::width + col + 2] = static_cast<std::uint8_t>(result.dbls[1]);
-      data[row * frr::width + col + 3] = static_cast<std::uint8_t>(result.dbls[0]);
+      data[row * frr::width + col + 0] = static_cast<std::uint8_t>(_mm256_extract_epi64(iteration, 0));
+      data[row * frr::width + col + 1] = static_cast<std::uint8_t>(_mm256_extract_epi64(iteration, 1));
+      data[row * frr::width + col + 2] = static_cast<std::uint8_t>(_mm256_extract_epi64(iteration, 2));
+      data[row * frr::width + col + 3] = static_cast<std::uint8_t>(_mm256_extract_epi64(iteration, 3));
       x0                               = _mm256_add_pd(x0, x_step);
     }
     y0 = _mm256_add_pd(y0, y_delta);
