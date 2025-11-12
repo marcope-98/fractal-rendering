@@ -29,6 +29,7 @@ auto frr::simd(uint8_t *const data,
 
   const __m256d x_delta  = _mm256_set1_pd((BR.x - TL.x) * x_delta_factor);
   const __m256d y_delta  = _mm256_set1_pd((BR.y - TL.y) * y_delta_factor);
+  const __m256d x_step   = _mm256_mul_pd(x_delta, four);
   const __m256d x_origin = _mm256_add_pd(_mm256_set1_pd(TL.x * x0_factor - 2.0), _mm256_mul_pd(x_delta, _mm256_set_pd(0.0, 1.0, 2.0, 3.0)));
   __m256d       y0       = _mm256_set1_pd(TL.y * y0_factor - 1.0);
   avx_register  result;
@@ -62,7 +63,7 @@ auto frr::simd(uint8_t *const data,
       data[row * frr::width + col + 1] = static_cast<std::uint8_t>(result.dbls[2]);
       data[row * frr::width + col + 2] = static_cast<std::uint8_t>(result.dbls[1]);
       data[row * frr::width + col + 3] = static_cast<std::uint8_t>(result.dbls[0]);
-      x0                               = _mm256_add_pd(x0, _mm256_mul_pd(x_delta, four));
+      x0                               = _mm256_add_pd(x0, x_step);
     }
     y0 = _mm256_add_pd(y0, y_delta);
   }
