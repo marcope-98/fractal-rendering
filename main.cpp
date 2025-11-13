@@ -8,6 +8,7 @@
 #include "frr/common.hpp"
 #include "frr/impl/naive.hpp"
 #include "frr/impl/simd.hpp"
+#include "frr/impl/threads.hpp"
 #include "frr/utils/Camera.hpp"
 
 int main(void)
@@ -44,7 +45,7 @@ int main(void)
 
     if (IsKeyPressed(KEY_KP_ADD)) max_iterations += 32;
     if (IsKeyPressed(KEY_KP_SUBTRACT)) max_iterations = max_iterations == 32 ? 32 : max_iterations - 32;
-    if (int key = GetKeyPressed(); KEY_ONE <= key && key <= KEY_TWO) last_key_pressed = key;
+    if (int key = GetKeyPressed(); KEY_ONE <= key && key <= KEY_THREE) last_key_pressed = key;
 
     // Fractal computation
     auto begin = std::chrono::steady_clock::now();
@@ -55,6 +56,9 @@ int main(void)
         break;
       case KEY_TWO:
         frr::simd(data, cm.getTL(), cm.getBR(), max_iterations);
+        break;
+      case KEY_THREE:
+        frr::threads(data, cm.getTL(), cm.getBR(), max_iterations);
         break;
       default:
         frr::naive(data, cm.getTL(), cm.getBR(), max_iterations);
