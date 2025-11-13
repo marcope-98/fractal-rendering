@@ -91,6 +91,7 @@ int main(void)
     if (IsKeyPressed(KEY_KP_ADD)) max_iterations += 32;
     if (IsKeyPressed(KEY_KP_SUBTRACT)) max_iterations = max_iterations == 32 ? 32 : max_iterations - 32;
     if (int key = GetKeyPressed(); KEY_ONE <= key && key <= KEY_TWO) last_key_pressed = key;
+
     // Fractal computation
     auto begin = std::chrono::steady_clock::now();
     switch (last_key_pressed)
@@ -110,7 +111,7 @@ int main(void)
     // Draw Texture
     BeginDrawing();
     DrawTexture(texture, 0, 0, WHITE);
-    DrawText((std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()) + " [ms] | " + std::to_string(max_iterations)).c_str(),
+    DrawText((std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()) + " [ms] | Max Iterations: " + std::to_string(max_iterations)).c_str(),
              0, 0, 20, RAYWHITE);
     EndDrawing();
   }
