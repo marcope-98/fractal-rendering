@@ -8,6 +8,7 @@
 #include "frr/common.hpp"
 #include "frr/impl/naive.hpp"
 #include "frr/impl/simd.hpp"
+#include "frr/impl/threadpool.hpp"
 #include "frr/impl/threads.hpp"
 #include "frr/utils/Camera.hpp"
 
@@ -24,9 +25,11 @@ int main(void)
   };
 
   InitWindow(frr::width, frr::height, "Fractal Rendering");
-  frr::Camera cm;
-  Texture2D   texture          = LoadTextureFromImage(image);
-  int         last_key_pressed = KEY_NULL;
+
+  frr::Camera     cm;
+  frr::ThreadPool tp(data);
+  Texture2D       texture          = LoadTextureFromImage(image);
+  int             last_key_pressed = KEY_NULL;
   while (!WindowShouldClose())
   {
     // User Input
@@ -45,7 +48,7 @@ int main(void)
 
     if (IsKeyPressed(KEY_KP_ADD)) max_iterations += 32;
     if (IsKeyPressed(KEY_KP_SUBTRACT)) max_iterations = max_iterations == 32 ? 32 : max_iterations - 32;
-    if (int key = GetKeyPressed(); KEY_ONE <= key && key <= KEY_THREE) last_key_pressed = key;
+    if (int key = GetKeyPressed(); KEY_ONE <= key && key <= KEY_FOUR) last_key_pressed = key;
 
     // Fractal computation
     auto begin = std::chrono::steady_clock::now();
@@ -59,6 +62,9 @@ int main(void)
         break;
       case KEY_THREE:
         frr::threads(data, cm.getTL(), cm.getBR(), max_iterations);
+        break;
+      case KEY_FOUR:
+        tp.run(cm.getTL(), cm.getBR(), max_iterations);
         break;
       default:
         frr::naive(data, cm.getTL(), cm.getBR(), max_iterations);
@@ -74,6 +80,7 @@ int main(void)
     EndDrawing();
   }
 
+  tp.destroy();
   // Clean up
   UnloadTexture(texture);
   CloseWindow();

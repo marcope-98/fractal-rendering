@@ -7,6 +7,7 @@ add_library(${FRR_LIBRARY_NAME}
   src/impl/naive.cpp
   src/impl/simd.cpp
   src/impl/threads.cpp
+  src/impl/threadpool.cpp
 )
 add_library(${FRR_LIBRARY_NAME}::${FRR_LIBRARY_NAME} ALIAS ${FRR_LIBRARY_NAME})
 
