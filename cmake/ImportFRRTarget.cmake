@@ -1,4 +1,3 @@
-include(IgnoreExternalHeadersWarning)
 
 set(FRR_LIBRARY_NAME frr)
 add_library(${FRR_LIBRARY_NAME}
@@ -21,6 +20,3 @@ target_compile_options(${FRR_LIBRARY_NAME}
   $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
   -Wall -Wextra -Werror -Wpedantic -O2 -march=native>
 )
-
-ignore_external_headers_warning(${FRR_LIBRARY_NAME} raylib)
-target_link_libraries(${FRR_LIBRARY_NAME} raylib)

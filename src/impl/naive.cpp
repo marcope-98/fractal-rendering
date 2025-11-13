@@ -2,7 +2,7 @@
 #include "frr/common.hpp"
 
 auto frr::naive(std::uint8_t *const data,
-                const Vector2 TL, const Vector2 BR,
+                const Vector_f64 &TL, const Vector_f64 &BR,
                 const std::size_t max_iteration) -> void
 {
   constexpr double w              = static_cast<double>(frr::width);

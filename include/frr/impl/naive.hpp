@@ -2,11 +2,12 @@
 #define FRR_NAIVE_HPP_
 #include <cstdint>
 
-#include "raylib.h"
+#include "frr/utils/Vector.hpp"
+
 namespace frr
 {
   auto naive(std::uint8_t *const data,
-             const Vector2 TL, const Vector2 BR,
+             const Vector_f64 &TL, const Vector_f64 &BR,
              const std::size_t max_iteration) -> void;
 
 }
