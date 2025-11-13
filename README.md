@@ -1,11 +1,11 @@
 # Mandelbrot Renderer - C++17 + Raylib
 
-This project is a real-time Mandelbrot Set renderer build with C++17 and raylib 5.5, exploring the impact of several optimization strategies on fractal rendering performance.
+This project is a real-time Mandelbrot Set renderer built with C++17 and raylib 5.5, exploring the impact of several optimization strategies on fractal rendering performance.
 
 ![](/media/MandelbrotSet.png?raw=true "Mandelbrot set")
 
 ## Overview
-The renderer visualizes the Mandelbrot Set using multiple algorithm approaches: from a simple, naive escape-time algorithm to AVX/AVX2-optimized versions runnign across multiple threads and a thread pool.
+The renderer visualizes the Mandelbrot Set using multiple algorithmic approaches: from a simple, naive escape-time algorithm to AVX/AVX2-optimized versions running across multiple threads and a thread pool.
 
 By leveraging raylib, the user can interactively explore the fractal space with smooth zooming, panning, and algorithm switching; all rendered in real time.
 
@@ -26,19 +26,19 @@ The project explores and compares the following implementations
 1. **Escape-Time Algorithm**: Straightforward pixel-by-pixel computation.
 2. **AVX/AVX2 Intrinsics**: Vectorized computations for parallel pixel evaluation using SIMD instructions.
 3. **AVX/AVX2 + Threads**: Workload distributed among multiple threads (36 in total)
-4. **AVX/AVX2 + Thread Pool**: Tasks dispatched to a persisten thread pool to avoid repeated thread creation/destruction overhead.
+4. **AVX/AVX2 + Thread Pool**: Tasks dispatched to a persistent thread pool to avoid repeated thread creation/destruction overhead.
 
 ## Observations
-While each optimization step brought measurable speedups over the naive approach, the performance difference between threads and thread pool was negligible.
+While each optimization step brought measurable speedups over the naive approach, the performance difference between the threaded and thread pool implementations was negligible.
 
 Possible explanations include:
-- **Improved cache locality**: Each thread processes a contigous pixel region reducing cache misses.
+- **Improved cache locality**: Each thread processes a contiguous pixel region reducing cache misses.
 - **Thread count overhead balance**: With 36 threads, the creation/destruction cost in method 3 may be effectively masked by the workload size.
 
 ## Dependencies
 - C++17 or newer
 - raylib 5.5 (graphics and input handling)
-- a CPU supporting AVX/AVX2 instructions for SIMD acceleration
+- A CPU supporting AVX/AVX2 instructions for SIMD acceleration
 
 ## Building
 ```bash
