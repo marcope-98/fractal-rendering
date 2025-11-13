@@ -1,4 +1,4 @@
-#include "frr/simd.hpp"
+#include "frr/impl/simd.hpp"
 #include "frr/common.hpp"
 
 #include <immintrin.h>

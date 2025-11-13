@@ -3,8 +3,8 @@ include(IgnoreExternalHeadersWarning)
 set(FRR_LIBRARY_NAME frr)
 add_library(${FRR_LIBRARY_NAME}
   STATIC
-  src/naive.cpp
-  src/simd.cpp
+  src/impl/naive.cpp
+  src/impl/simd.cpp
 )
 add_library(${FRR_LIBRARY_NAME}::${FRR_LIBRARY_NAME} ALIAS ${FRR_LIBRARY_NAME})
 

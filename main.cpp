@@ -6,8 +6,8 @@
 #include "raymath.h"
 
 #include "frr/common.hpp"
-#include "frr/naive.hpp"
-#include "frr/simd.hpp"
+#include "frr/impl/naive.hpp"
+#include "frr/impl/simd.hpp"
 
 class CameraManager
 {
