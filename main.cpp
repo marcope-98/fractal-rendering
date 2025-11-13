@@ -88,8 +88,8 @@ int main(void)
     if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) cm.pan();
     if (float wheel = GetMouseWheelMove(); wheel != 0) cm.zoom(wheel);
     cm.bound();
-    if (IsKeyPressed(KEY_KP_ADD)) max_iterations *= 2;
-    if (IsKeyPressed(KEY_KP_SUBTRACT)) max_iterations /= 2;
+    if (IsKeyPressed(KEY_KP_ADD)) max_iterations += 32;
+    if (IsKeyPressed(KEY_KP_SUBTRACT)) max_iterations = max_iterations == 32 ? 32 : max_iterations - 32;
     if (int key = GetKeyPressed(); KEY_ONE <= key && key <= KEY_TWO) last_key_pressed = key;
     // Fractal computation
     auto begin = std::chrono::steady_clock::now();
