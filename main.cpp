@@ -80,7 +80,7 @@ int main(void)
     EndDrawing();
   }
 
-  tp.destroy();
+  tp.shutdown();
   // Clean up
   UnloadTexture(texture);
   CloseWindow();
