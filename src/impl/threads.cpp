@@ -68,16 +68,15 @@ auto frr::threads(std::uint8_t *const data,
                   const Vector_f64 &TL, const Vector_f64 &BR,
                   const std::size_t max_iteration) -> void
 {
-  constexpr std::size_t n_threads{36};
-  constexpr std::size_t rows_per_thread{frr::height / n_threads};
-  std::thread           threads[n_threads];
-  for (std::size_t i{}; i < n_threads; ++i)
+  constexpr std::size_t rows_per_thread{frr::height / frr::n_threads};
+  std::thread           threads[frr::n_threads];
+  for (std::size_t i{}; i < frr::n_threads; ++i)
     threads[i] = std::thread(&threads_simd,
                              data,
                              TL, BR,
                              i * rows_per_thread, (i + 1) * rows_per_thread,
                              max_iteration);
 
-  for (std::size_t i{}; i < n_threads; ++i)
+  for (std::size_t i{}; i < frr::n_threads; ++i)
     threads[i].join();
 }
