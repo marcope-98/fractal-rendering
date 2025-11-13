@@ -77,7 +77,7 @@ auto frr::Worker::run() -> void
   }
 }
 
-frr::ThreadPool::ThreadPool(std::uint8_t *const data)
+auto frr::ThreadPool::init(std::uint8_t *const data) -> void
 {
   constexpr std::size_t rows_per_thread{frr::height / frr::n_threads};
   for (std::size_t i{}; i < frr::n_threads; ++i)

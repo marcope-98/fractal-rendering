@@ -24,16 +24,15 @@ namespace frr
     std::condition_variable cv;
     std::thread             thread;
 
-    void start(const Vector_f64 &TL, const Vector_f64 &BR, const std::size_t max_iterations);
-    void run();
+    auto start(const Vector_f64 &TL, const Vector_f64 &BR, const std::size_t max_iterations) -> void;
+    auto run() -> void;
   };
 
   struct ThreadPool
   {
     Worker workers[frr::n_threads];
 
-    explicit ThreadPool(std::uint8_t *const data);
-
+    auto init(std::uint8_t *const data) -> void;
     auto run(const Vector_f64 &TL, const Vector_f64 &BR, const std::size_t max_iterations) -> void;
     auto shutdown() -> void;
   };
