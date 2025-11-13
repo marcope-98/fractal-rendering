@@ -15,8 +15,9 @@
 int main(void)
 {
   std::size_t max_iterations{64};
-  uint8_t *   data  = new uint8_t[frr::width * frr::height]();
-  Image       image = {
+  std::string methods[4] = {"Naive", "AVX2", "Threads", "ThreadPool"};
+  uint8_t *   data       = new uint8_t[frr::width * frr::height]();
+  Image       image      = {
       data,                               /* data */
       frr::width,                         /* width */
       frr::height,                        /* height */
@@ -29,7 +30,7 @@ int main(void)
   frr::Camera     cm;
   frr::ThreadPool tp(data);
   Texture2D       texture          = LoadTextureFromImage(image);
-  int             last_key_pressed = KEY_NULL;
+  int             last_key_pressed = 0;
   while (!WindowShouldClose())
   {
     // User Input
@@ -48,26 +49,24 @@ int main(void)
 
     if (IsKeyPressed(KEY_KP_ADD)) max_iterations += 32;
     if (IsKeyPressed(KEY_KP_SUBTRACT)) max_iterations = max_iterations == 32 ? 32 : max_iterations - 32;
-    if (int key = GetKeyPressed(); KEY_ONE <= key && key <= KEY_FOUR) last_key_pressed = key;
+    if (int key = GetKeyPressed(); KEY_ONE <= key && key <= KEY_FOUR) last_key_pressed = key - KEY_ONE;
 
     // Fractal computation
     auto begin = std::chrono::steady_clock::now();
     switch (last_key_pressed)
     {
-      case KEY_ONE:
+      case 0:
         frr::naive(data, cm.getTL(), cm.getBR(), max_iterations);
         break;
-      case KEY_TWO:
+      case 1:
         frr::simd(data, cm.getTL(), cm.getBR(), max_iterations);
         break;
-      case KEY_THREE:
+      case 2:
         frr::threads(data, cm.getTL(), cm.getBR(), max_iterations);
         break;
-      case KEY_FOUR:
+      case 3:
         tp.run(cm.getTL(), cm.getBR(), max_iterations);
         break;
-      default:
-        frr::naive(data, cm.getTL(), cm.getBR(), max_iterations);
     }
     auto end = std::chrono::steady_clock::now();
     // Update Texture with new screen buffer
@@ -75,7 +74,7 @@ int main(void)
     // Draw Texture
     BeginDrawing();
     DrawTexture(texture, 0, 0, WHITE);
-    DrawText((std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()) + " [ms] | Max Iterations: " + std::to_string(max_iterations)).c_str(),
+    DrawText((std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()) + " [ms] | Max Iterations: " + std::to_string(max_iterations) + " | " + methods[last_key_pressed]).c_str(),
              0, 0, 20, RAYWHITE);
     EndDrawing();
   }
