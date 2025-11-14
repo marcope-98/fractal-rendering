@@ -79,6 +79,7 @@ auto frr::Worker::run() -> void
     }
     completed.fetch_add(1, std::memory_order::memory_order_release);
   }
+
 }
 
 auto frr::ThreadPool::init(std::uint8_t *const data) -> void
@@ -97,13 +98,13 @@ auto frr::ThreadPool::init(std::uint8_t *const data) -> void
 auto frr::ThreadPool::run(const Vector_f64 &TL, const Vector_f64 &BR,
                           const std::size_t max_iterations) -> void
 {
-  completed.store(0, std::memory_order::memory_order_release);
+  completed.store(0, std::memory_order::memory_order_relaxed);
   for (std::size_t i{}; i < frr::n_threads; ++i)
     this->workers[i].start(TL, BR, max_iterations);
   cv.notify_all();
 
   while(completed.load(std::memory_order::memory_order_acquire) < frr::n_threads)
-    std::this_thread::yield();    
+    std::this_thread::yield();
 }
 
 auto frr::ThreadPool::shutdown() -> void
