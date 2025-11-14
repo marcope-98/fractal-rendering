@@ -16,7 +16,7 @@ add_executable(fractal_rendering main.cpp)
 target_compile_options(fractal_rendering
   PRIVATE
   $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
-  -Wall -Wextra -Werror -Wpedantic -O2 -march=native>
+  -Wall -Wextra -Werror -Wpedantic -O2>
   )
 
 ignore_external_headers_warning(fractal_rendering raylib)
