@@ -1,16 +1,19 @@
 #include "frr/impl/threadpool.hpp"
 #include <immintrin.h>
 
+#include <condition_variable>
+#include <mutex>
+
+std::mutex mtx;
+std::condition_variable cv;
 inline static std::atomic<std::size_t> completed{0};
 
 auto frr::Worker::start(const Vector_f64 &TL, const Vector_f64 &BR,
                         const std::size_t max_iterations) -> void
 {
-  this->BR             = BR;
-  this->TL             = TL;
-  this->max_iterations = max_iterations;
-  std::unique_lock<std::mutex> lm{this->mtx};
-  this->cv.notify_one();
+    this->BR             = BR;
+    this->TL             = TL;
+    this->max_iterations = max_iterations;
 }
 
 auto frr::Worker::run() -> void
@@ -29,9 +32,10 @@ auto frr::Worker::run() -> void
 
   while (this->alive)
   {
-    std::unique_lock<std::mutex> lm{this->mtx};
-    this->cv.wait(lm);
-
+    {
+      std::unique_lock<std::mutex> lm{mtx};
+      cv.wait(lm);
+    }
     const __m256i max_iter = _mm256_set1_epi64x(this->max_iterations);
 
     const __m256d x_delta  = _mm256_set1_pd((this->BR.x - this->TL.x) * x_delta_factor);
@@ -73,7 +77,7 @@ auto frr::Worker::run() -> void
       }
       y0 = _mm256_add_pd(y0, y_delta);
     }
-    ++completed;
+    completed.fetch_add(1, std::memory_order::memory_order_release);
   }
 }
 
@@ -93,21 +97,20 @@ auto frr::ThreadPool::init(std::uint8_t *const data) -> void
 auto frr::ThreadPool::run(const Vector_f64 &TL, const Vector_f64 &BR,
                           const std::size_t max_iterations) -> void
 {
-  completed = 0;
+  completed.store(0, std::memory_order::memory_order_release);
   for (std::size_t i{}; i < frr::n_threads; ++i)
     this->workers[i].start(TL, BR, max_iterations);
-  while (completed < frr::n_threads)
-  {
-  }
+  cv.notify_all();
+
+  while(completed.load(std::memory_order::memory_order_acquire) < frr::n_threads)
+    std::this_thread::yield();    
 }
 
 auto frr::ThreadPool::shutdown() -> void
 {
   for (std::size_t i{}; i < frr::n_threads; i++)
-  {
     this->workers[i].alive = false;
-    this->workers[i].cv.notify_one();
-  }
+  cv.notify_all();
 
   for (std::size_t i{}; i < frr::n_threads; ++i)
     this->workers[i].thread.join();

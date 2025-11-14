@@ -2,9 +2,7 @@
 #define FRR_IMPL_THREADPOOL_HPP_
 
 #include <atomic>
-#include <condition_variable>
 #include <cstdint>
-#include <mutex>
 #include <thread>
 
 #include "frr/common.hpp"
@@ -20,8 +18,6 @@ namespace frr
     std::size_t   row_start{}, row_end{};
     std::uint8_t *data{nullptr};
 
-    std::mutex              mtx;
-    std::condition_variable cv;
     std::thread             thread;
 
     auto start(const Vector_f64 &TL, const Vector_f64 &BR, const std::size_t max_iterations) -> void;
