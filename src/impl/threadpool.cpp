@@ -4,16 +4,16 @@
 #include <condition_variable>
 #include <mutex>
 
-std::mutex mtx;
-std::condition_variable cv;
-inline static std::atomic<std::size_t> completed{0};
+std::mutex               mtx;
+std::condition_variable  cv;
+std::atomic<std::size_t> completed{0};
 
 auto frr::Worker::start(const Vector_f64 &TL, const Vector_f64 &BR,
                         const std::size_t max_iterations) -> void
 {
-    this->BR             = BR;
-    this->TL             = TL;
-    this->max_iterations = max_iterations;
+  this->BR             = BR;
+  this->TL             = TL;
+  this->max_iterations = max_iterations;
 }
 
 auto frr::Worker::run() -> void
@@ -77,9 +77,8 @@ auto frr::Worker::run() -> void
       }
       y0 = _mm256_add_pd(y0, y_delta);
     }
-    completed.fetch_add(1, std::memory_order::memory_order_release);
+    completed.fetch_add(1, std::memory_order::memory_order_acq_rel);
   }
-
 }
 
 auto frr::ThreadPool::init(std::uint8_t *const data) -> void
@@ -98,12 +97,12 @@ auto frr::ThreadPool::init(std::uint8_t *const data) -> void
 auto frr::ThreadPool::run(const Vector_f64 &TL, const Vector_f64 &BR,
                           const std::size_t max_iterations) -> void
 {
-  completed.store(0, std::memory_order::memory_order_relaxed);
+  completed.store(0, std::memory_order::memory_order_release);
   for (std::size_t i{}; i < frr::n_threads; ++i)
     this->workers[i].start(TL, BR, max_iterations);
   cv.notify_all();
 
-  while(completed.load(std::memory_order::memory_order_acquire) < frr::n_threads)
+  while (completed.load(std::memory_order::memory_order_acquire) < frr::n_threads)
     std::this_thread::yield();
 }
 
