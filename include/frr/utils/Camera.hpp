@@ -23,7 +23,7 @@ namespace frr
       this->offset             = mouse_position;
       this->target             = mouseWorldPos;
       this->zoom_factor        = std::fmax(
-          std::exp(wheel * 0.2 + std::log(this->zoom_factor)),
+          (this->zoom_factor + this->zoom_factor*(wheel*0.1)),
           1.0);
     }
 
