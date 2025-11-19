@@ -34,15 +34,6 @@ namespace frr
       this->zoom_factor = 1.0;
     }
 
-    void bound()
-    {
-      Vector_f64 boundary;
-      boundary = min(this->screen2world(this->world_lower_bound), this->world_lower_bound);
-      this->target -= boundary;
-
-      boundary = max(this->screen2world(this->world_upper_bound), this->world_upper_bound) - this->world_upper_bound;
-      this->target -= boundary;
-    }
 
     Vector_f64 getTL() const { return this->screen2world(this->world_lower_bound); }
     Vector_f64 getBR() const { return this->screen2world(this->world_upper_bound); }

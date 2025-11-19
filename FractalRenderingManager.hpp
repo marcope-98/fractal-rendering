@@ -67,7 +67,6 @@ struct FractalRenderingManager
       Vector2 mousePosition = GetMousePosition();
       cm.zoom({mousePosition.x, mousePosition.y}, static_cast<double>(wheel));
     }
-    cm.bound();
 
     // Keypad controls
     if (IsKeyPressed(KEY_KP_ADD)) this->max_iterations += 32;
