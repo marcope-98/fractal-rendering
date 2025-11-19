@@ -97,9 +97,9 @@ auto frr::ThreadPool::init(std::uint8_t *const data) -> void
 auto frr::ThreadPool::run(const Vector_f64 &TL, const Vector_f64 &BR,
                           const std::size_t max_iterations) -> void
 {
-  completed.store(0, std::memory_order::memory_order_relaxed);
   for (std::size_t i{}; i < frr::n_threads; ++i)
-    this->workers[i].start(TL, BR, max_iterations);
+  this->workers[i].start(TL, BR, max_iterations);
+  completed.store(0, std::memory_order::memory_order_release);
   cv.notify_all();
 
   while (completed.load(std::memory_order::memory_order_acquire) < frr::n_threads)
