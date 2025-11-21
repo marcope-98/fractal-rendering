@@ -32,19 +32,17 @@ auto frr::simd(std::uint8_t *const data,
       __m256d x = _mm256_setzero_pd(), y = _mm256_setzero_pd();
       __m256d x2 = _mm256_setzero_pd(), y2 = _mm256_setzero_pd();
       __m256i iteration = _mm256_setzero_si256();
-      __m256d condition1;
-      __m256i condition2, increment;
+      __m256i condition1, condition2;
 
     loop:
       y          = _mm256_fmadd_pd(two, _mm256_mul_pd(x, y), y0);
       x          = _mm256_add_pd(_mm256_sub_pd(x2, y2), x0);
       x2         = _mm256_mul_pd(x, x);
       y2         = _mm256_mul_pd(y, y);
-      condition1 = _mm256_cmp_pd(_mm256_add_pd(x2, y2), four, _CMP_LE_OS);
+      condition1 = _mm256_castpd_si256(_mm256_cmp_pd(_mm256_add_pd(x2, y2), four, _CMP_LE_OS));
       condition2 = _mm256_cmpgt_epi64(max_iter, iteration);
-      condition2 = _mm256_and_si256(_mm256_castpd_si256(condition1), condition2);
-      increment  = _mm256_and_si256(one, condition2);
-      iteration  = _mm256_add_epi64(iteration, increment);
+      condition2 = _mm256_and_si256(condition1, condition2);
+      iteration  = _mm256_add_epi64(iteration, _mm256_and_si256(one, condition2));
       if (_mm256_movemask_pd(_mm256_castsi256_pd(condition2)) > 0)
         goto loop;
 
