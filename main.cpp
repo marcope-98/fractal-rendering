@@ -1,12 +1,18 @@
 #include <chrono>
+#include <iostream>
 
 #include "FractalRenderingManager.hpp"
 #include "raylib.h"
 
 int main(int argc, char* argv[])
 {
-  FractalRenderingManager frm;
-  if (argc > 1) frm.upload_shader(argv[1]);
+  if (argc != 2) 
+  {
+    std::cerr << "Incorrect number of arguments provided. Expected 2, got " << argc << "\n";
+    return 1;
+  }    
+
+  FractalRenderingManager frm(argv[1]);
   while (!WindowShouldClose())
   {
     frm.user_input();

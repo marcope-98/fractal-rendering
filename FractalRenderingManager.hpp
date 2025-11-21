@@ -32,16 +32,14 @@ struct FractalRenderingManager
   int         last_key_pressed{0};
   
 
-  FractalRenderingManager()
+  FractalRenderingManager(const std::string& shader_location)
   {
-    std::string default_shader_location{"../shaders/grayscale.fs"};
-    if (!std::filesystem::exists(std::filesystem::path{default_shader_location}))
+    if (!std::filesystem::exists(std::filesystem::path{shader_location}))
     {
-      std::cerr << "Default shader file does not exist.\nTo enforce deterministic execution of the program, please provide the file.\n";
+      std::cerr << "Specified shader file " << shader_location << " does not exist. Please check your path.\n";
       exit(1);
     }
 
-    
     this->data = new std::uint32_t[frr::width * frr::height]();
     this->tp.init(this->data);
     
@@ -54,18 +52,6 @@ struct FractalRenderingManager
       PIXELFORMAT_UNCOMPRESSED_R8G8B8A8   /* format */
     };
     this->texture = LoadTextureFromImage(image);
-    this->shader = LoadShader(0, default_shader_location.c_str());
-  }
-
-  void upload_shader(const std::string& shader_location)
-  {
-    if (!std::filesystem::exists(std::filesystem::path{shader_location}))
-    {
-      std::cerr << "Could not find shader file: " << shader_location << "\n";
-      exit(1);
-    }
-
-    UnloadShader(this->shader);
     this->shader = LoadShader(0, shader_location.c_str());
   }
 
