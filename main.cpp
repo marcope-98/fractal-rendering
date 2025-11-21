@@ -3,9 +3,10 @@
 #include "FractalRenderingManager.hpp"
 #include "raylib.h"
 
-int main(void)
+int main(int argc, char* argv[])
 {
   FractalRenderingManager frm;
+  if (argc > 1) frm.upload_shader(argv[1]);
   while (!WindowShouldClose())
   {
     frm.user_input();

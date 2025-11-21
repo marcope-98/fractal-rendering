@@ -3,6 +3,8 @@
 
 #include <cstdint>
 #include <string>
+#include <iostream>
+#include <filesystem>
 
 #include "raylib.h"
 
@@ -23,29 +25,54 @@ struct FractalRenderingManager
   // raylib
   Texture2D   texture;
   std::string methods[4] = {"Naive", "AVX2", "Threads", "ThreadPool"};
+  Shader      shader;
 
   // user input
   frr::Camera cm;
   int         last_key_pressed{0};
+  
 
   FractalRenderingManager()
   {
+    std::string default_shader_location{"../shaders/grayscale.fs"};
+    if (!std::filesystem::exists(std::filesystem::path{default_shader_location}))
+    {
+      std::cerr << "Default shader file does not exist.\nTo enforce deterministic execution of the program, please provide the file.\n";
+      exit(1);
+    }
+
+    
     this->data = new std::uint8_t[frr::width * frr::height]();
     this->tp.init(this->data);
-
+    
     InitWindow(frr::width, frr::height, "Fractal Rendering");
     Image image = {
-        this->data,                         /* data */
-        frr::width,                         /* width */
-        frr::height,                        /* height */
-        PIXELFORMAT_UNCOMPRESSED_GRAYSCALE, /* format */
-        1                                   /* mipmaps */
+      this->data,                         /* data */
+      frr::width,                         /* width */
+      frr::height,                        /* height */
+      PIXELFORMAT_UNCOMPRESSED_GRAYSCALE, /* format */
+      1                                   /* mipmaps */
     };
     this->texture = LoadTextureFromImage(image);
+    this->shader = LoadShader(0, default_shader_location.c_str());
   }
+
+  void upload_shader(const std::string& shader_location)
+  {
+    if (!std::filesystem::exists(std::filesystem::path{shader_location}))
+    {
+      std::cerr << "Could not find shader file: " << shader_location << "\n";
+      exit(1);
+    }
+
+    UnloadShader(this->shader);
+    this->shader = LoadShader(0, shader_location.c_str());
+  }
+
 
   ~FractalRenderingManager()
   {
+    UnloadShader(this->shader);
     UnloadTexture(this->texture);
     CloseWindow();
     this->tp.shutdown();
@@ -100,7 +127,9 @@ struct FractalRenderingManager
     UpdateTexture(this->texture, this->data);
     // clang-format off
     BeginDrawing();
-      DrawTexture(this->texture, 0, 0, WHITE);
+      BeginShaderMode(this->shader);
+        DrawTexture(this->texture, 0, 0, WHITE);
+      EndShaderMode();
       DrawText((duration + " [ms] | Max Iterations: " + std::to_string(this->max_iterations) + 
                                 " | " + this->methods[this->last_key_pressed]).c_str(),
                 0, 0, 20, RAYWHITE);
