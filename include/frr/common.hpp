@@ -26,7 +26,7 @@ namespace frr
   inline constexpr double qx{mandelbrot_min_x};
   inline constexpr double qy{mandelbrot_min_y};
 
-  inline constexpr double zoom_limit{std::numeric_limits<double>::epsilon()};
+  inline constexpr double zoom_limit{(mandelbrot_size_x * inv_w) / (std::numeric_limits<double>::epsilon())};
 
 } // namespace frr
 #endif // FRR_COMMON_HPP_

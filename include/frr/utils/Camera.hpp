@@ -23,9 +23,8 @@ namespace frr
       Vector_f64 mouseWorldPos = this->screen2world(mouse_position);
       this->offset             = mouse_position;
       this->target             = mouseWorldPos;
-      this->zoom_factor        = std::fmax(
-          (this->zoom_factor + this->zoom_factor*(wheel*0.1)),
-          1.0);
+      this->zoom_factor       += this->zoom_factor* wheel * 0.1;
+      this->zoom_factor        = std::clamp(this->zoom_factor, 1.0, frr::zoom_limit); 
     }
 
     void reset()
@@ -38,20 +37,15 @@ namespace frr
 
     Vector_f64 getTL() const { return this->screen2world(this->world_lower_bound) * this->m + this->q; }
     Vector_f64 getBR() const { return this->screen2world(this->world_upper_bound) * this->m + this->q; }
-    Vector_f64 delta() const { return this->delta_zoom_1 / this->zoom_factor; }
+    Vector_f64 delta() const { return this->m / this->zoom_factor; }
 
     Vector_f64 screen2world(const Vector_f64 &screen) const { return ((screen - this->offset) / this->zoom_factor) + this->target; }
-/*
-  BR-TL
-  (this->screen2world(BRp) - this->screen2world(TLp))*m  
-  (1280, 720) * m / zoom
-  */
-  private:
+
+    private:
     constexpr static Vector_f64 world_lower_bound{0.0, 0.0};
     constexpr static Vector_f64 world_upper_bound{frr::width, frr::height};
     constexpr static Vector_f64 m{frr::mx, frr::my};
     constexpr static Vector_f64 q{frr::qx, frr::qy};
-    constexpr static Vector_f64 delta_zoom_1{world_upper_bound * m * Vector_f64{inv_w, inv_h}};
   };
 } // namespace frr
 
