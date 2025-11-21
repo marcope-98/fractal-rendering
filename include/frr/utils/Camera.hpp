@@ -41,7 +41,11 @@ namespace frr
     Vector_f64 delta() const { return this->delta_zoom_1 / this->zoom_factor; }
 
     Vector_f64 screen2world(const Vector_f64 &screen) const { return ((screen - this->offset) / this->zoom_factor) + this->target; }
-
+/*
+  BR-TL
+  (this->screen2world(BRp) - this->screen2world(TLp))*m  
+  (1280, 720) * m / zoom
+  */
   private:
     constexpr static Vector_f64 world_lower_bound{0.0, 0.0};
     constexpr static Vector_f64 world_upper_bound{frr::width, frr::height};

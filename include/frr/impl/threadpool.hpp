@@ -20,7 +20,7 @@ namespace frr
 
     std::thread             thread;
 
-    auto start(const Vector_f64 &TL, const Vector_f64 &BR, const std::size_t max_iterations) -> void;
+    auto start(const Vector_f64 &TL, const Vector_f64 &delta, const std::size_t max_iterations) -> void;
     auto run() -> void;
   };
 
@@ -29,7 +29,7 @@ namespace frr
     Worker workers[frr::n_threads];
 
     auto init(std::uint8_t *const data) -> void;
-    auto run(const Vector_f64 &TL, const Vector_f64 &BR, const std::size_t max_iterations) -> void;
+    auto run(const Vector_f64 &TL, const Vector_f64 &delta, const std::size_t max_iterations) -> void;
     auto shutdown() -> void;
   };
 } // namespace frr

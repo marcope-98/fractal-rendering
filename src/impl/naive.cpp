@@ -2,20 +2,13 @@
 #include "frr/common.hpp"
 
 auto frr::naive(std::uint8_t *const data,
-                const Vector_f64 &TL, const Vector_f64 &BR,
+                const Vector_f64 &TL, const Vector_f64 &delta,
                 const std::size_t max_iteration) -> void
 {
-  constexpr double inv_w      = 1.0 / static_cast<double>(frr::width);
-  constexpr double inv_h      = 1.0 / static_cast<double>(frr::height);
-
-  const Vector_f64 delta = BR - TL;
-  const double x_delta   = delta.x * inv_w;
-  const double y_delta   = delta.y * inv_h;
-  const double x_origin  = TL.x;
-  double       y0        = TL.y;
+  double x0{TL.x}, y0{TL.y};
   for (std::size_t row{}; row < frr::height; ++row)
   {
-    double x0 = x_origin;
+    x0 = TL.x;
     for (std::size_t col{}; col < frr::width; ++col)
     {
       double      x{}, y{}, x2{}, y2{};
@@ -29,8 +22,8 @@ auto frr::naive(std::uint8_t *const data,
         ++iteration;
       }
       data[row * frr::width + col] = frr::palette[iteration % 32u];
-      x0 += x_delta;
+      x0 += delta.x;
     }
-    y0 += y_delta;
+    y0 += delta.y;
   }
 }

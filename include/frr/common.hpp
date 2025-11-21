@@ -2,6 +2,7 @@
 #define FRR_COMMON_HPP_
 
 #include <cstdint>
+#include <limits>
 
 namespace frr
 {
@@ -18,9 +19,14 @@ namespace frr
   inline constexpr double mandelbrot_size_x{mandelbrot_max_x - mandelbrot_min_x};
   inline constexpr double mandelbrot_size_y{mandelbrot_max_y - mandelbrot_min_y};
   
-  inline constexpr double mx{mandelbrot_size_x / static_cast<double>(width)};
+  inline constexpr double inv_w{1.0 / static_cast<double>(width)};
+  inline constexpr double inv_h{1.0 / static_cast<double>(height)};
+  inline constexpr double mx{mandelbrot_size_x * inv_w};
+  inline constexpr double my{mandelbrot_size_y * inv_h};
   inline constexpr double qx{mandelbrot_min_x};
-  inline constexpr double my{mandelbrot_size_y / static_cast<double>(height)};
   inline constexpr double qy{mandelbrot_min_y};
+
+  inline constexpr double zoom_limit{std::numeric_limits<double>::epsilon()};
+
 } // namespace frr
 #endif // FRR_COMMON_HPP_

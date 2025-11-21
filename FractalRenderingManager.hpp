@@ -81,16 +81,16 @@ struct FractalRenderingManager
     switch (this->last_key_pressed)
     {
       case 0:
-        frr::naive(this->data, this->cm.getTL(), this->cm.getBR(), this->max_iterations);
+        frr::naive(this->data, this->cm.getTL(), this->cm.delta(), this->max_iterations);
         break;
       case 1:
-        frr::simd(this->data, this->cm.getTL(), this->cm.getBR(), this->max_iterations);
+        frr::simd(this->data, this->cm.getTL(), this->cm.delta(), this->max_iterations);
         break;
       case 2:
-        frr::threads(this->data, this->cm.getTL(), this->cm.getBR(), this->max_iterations);
+        frr::threads(this->data, this->cm.getTL(), this->cm.delta(), this->max_iterations);
         break;
       case 3:
-        tp.run(this->cm.getTL(), this->cm.getBR(), this->max_iterations);
+        tp.run(this->cm.getTL(), this->cm.delta(), this->max_iterations);
         break;
     }
   }

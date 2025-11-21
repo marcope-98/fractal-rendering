@@ -4,13 +4,9 @@
 #include <immintrin.h>
 
 auto frr::simd(std::uint8_t *const data,
-               const Vector_f64 TL, const Vector_f64 BR,
+               const Vector_f64& TL, const Vector_f64& delta,
                const std::size_t max_iteration) -> void
 {
-  constexpr double inv_w   = 1.0 / static_cast<double>(frr::width);
-  constexpr double inv_h   = 1.0 / static_cast<double>(frr::height);
-
-  const Vector_f64 delta = (BR - TL) * Vector_f64{inv_w, inv_h};
   const __m256i FF       = _mm256_set1_epi64x(0x1Full);
   const __m256i one      = _mm256_set1_epi64x(1);
   const __m256d two      = _mm256_set1_pd(2.0);

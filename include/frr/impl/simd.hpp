@@ -7,7 +7,7 @@
 namespace frr
 {
   auto simd(std::uint8_t *const data,
-            const Vector_f64 TL, const Vector_f64 BR,
+            const Vector_f64& TL, const Vector_f64& delta,
             const std::size_t max_iteration) -> void;
 
 }

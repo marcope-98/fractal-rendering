@@ -85,12 +85,9 @@ auto frr::ThreadPool::init(std::uint8_t *const data) -> void
   }
 }
 
-auto frr::ThreadPool::run(const Vector_f64 &TL, const Vector_f64 &BR,
+auto frr::ThreadPool::run(const Vector_f64 &TL, const Vector_f64 &delta,
                           const std::size_t max_iterations) -> void
 {
-  constexpr double inv_w = 1.0 / static_cast<double>(frr::width);
-  constexpr double inv_h = 1.0 / static_cast<double>(frr::height);
-  const Vector_f64 delta = (BR - TL) * Vector_f64{inv_w, inv_h};
   for (std::size_t i{}; i < frr::n_threads; ++i)
     this->workers[i].start(TL, delta, max_iterations);
   completed.store(0, std::memory_order::memory_order_release);

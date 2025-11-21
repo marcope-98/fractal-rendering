@@ -56,15 +56,12 @@ static auto threads_simd(std::uint8_t *const    data,
 }
 
 auto frr::threads(std::uint8_t *const data,
-                  const Vector_f64 &TL, const Vector_f64 &BR,
+                  const Vector_f64 &TL, const Vector_f64 &delta,
                   const std::size_t max_iteration) -> void
 {
-  constexpr double      inv_w{1.0 / static_cast<double>(frr::width)};
-  constexpr double      inv_h{1.0 / static_cast<double>(frr::height)}; 
   constexpr std::size_t rows_per_thread{frr::height / frr::n_threads};
 
   std::thread           threads[frr::n_threads];
-  const Vector_f64 delta = (BR - TL) * Vector_f64{inv_w, inv_h};
   for (std::size_t i{}; i < frr::n_threads; ++i)
     threads[i] = std::thread(&threads_simd,
                              data,
