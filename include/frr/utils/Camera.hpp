@@ -41,7 +41,7 @@ namespace frr
 
     Vector_f64 screen2world(const Vector_f64 &screen) const { return ((screen - this->offset) / this->zoom_factor) + this->target; }
 
-    private:
+  private:
     constexpr static Vector_f64 world_lower_bound{0.0, 0.0};
     constexpr static Vector_f64 world_upper_bound{frr::width, frr::height};
     constexpr static Vector_f64 m{frr::mx, frr::my};
