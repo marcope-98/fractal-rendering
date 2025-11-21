@@ -9,24 +9,24 @@ namespace frr
   public:
     T x{}, y{};
 
-    Vector        operator+(const Vector &other) const { return {this->x + other.x, this->y + other.y}; }
-    Vector        operator-(const Vector &other) const { return {this->x - other.x, this->y - other.y}; }
-    Vector        operator*(const Vector &other) const { return {this->x * other.x, this->y * other.y}; }
-    friend Vector operator*(T rhs, const Vector &lhs) { return {lhs.x * rhs, lhs.y * rhs}; }
-    Vector        operator*(T rhs) const { return {this->x * rhs, this->y * rhs}; }
-    Vector        operator/(T rhs) const { return {this->x / rhs, this->y / rhs}; }
+    constexpr Vector        operator+(const Vector &other) const { return {this->x + other.x, this->y + other.y}; }
+    constexpr Vector        operator-(const Vector &other) const { return {this->x - other.x, this->y - other.y}; }
+    constexpr Vector        operator*(const Vector &other) const { return {this->x * other.x, this->y * other.y}; }
+    constexpr friend Vector operator*(T rhs, const Vector &lhs) { return {lhs.x * rhs, lhs.y * rhs}; }
+    constexpr Vector        operator*(T rhs) const { return {this->x * rhs, this->y * rhs}; }
+    constexpr Vector        operator/(T rhs) const { return {this->x / rhs, this->y / rhs}; }
 
-    Vector operator+() const { return *this; }
-    Vector operator-() const { return {-this->x, -this->y}; }
+    constexpr Vector operator+() const { return *this; }
+    constexpr Vector operator-() const { return {-this->x, -this->y}; }
 
-    Vector &operator+=(const Vector &rhs)
+    constexpr Vector &operator+=(const Vector &rhs)
     {
       this->x += rhs.x;
       this->y += rhs.y;
       return *this;
     }
 
-    Vector &operator-=(const Vector &rhs)
+    constexpr Vector &operator-=(const Vector &rhs)
     {
       this->x -= rhs.x;
       this->y -= rhs.y;
