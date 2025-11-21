@@ -9,18 +9,17 @@ auto frr::simd(std::uint8_t *const data,
 {
   constexpr double inv_w   = 1.0 / static_cast<double>(frr::width);
   constexpr double inv_h   = 1.0 / static_cast<double>(frr::height);
-  constexpr double inv_4xw = 4.0 / static_cast<double>(frr::width);
 
-  const Vector_f64 delta = BR - TL;
+  const Vector_f64 delta = (BR - TL) * Vector_f64{inv_w, inv_h};
   const __m256i FF       = _mm256_set1_epi64x(0x1Full);
   const __m256i one      = _mm256_set1_epi64x(1);
   const __m256d two      = _mm256_set1_pd(2.0);
   const __m256d four     = _mm256_set1_pd(4.0);
   const __m256i max_iter = _mm256_set1_epi64x(max_iteration);
 
-  const __m256d x_delta  = _mm256_set1_pd(delta.x * inv_w);
-  const __m256d y_delta  = _mm256_set1_pd(delta.y * inv_h);
-  const __m256d x_step   = _mm256_set1_pd(delta.x * inv_4xw);
+  const __m256d x_delta  = _mm256_set1_pd(delta.x);
+  const __m256d y_delta  = _mm256_set1_pd(delta.y);
+  const __m256d x_step   = _mm256_set1_pd(delta.x * 4.0);
   const __m256d x_origin = _mm256_add_pd(_mm256_set1_pd(TL.x),
                                          _mm256_mul_pd(x_delta, _mm256_set_pd(3.0, 2.0, 1.0, 0.0)));
   __m256d       y0       = _mm256_set1_pd(TL.y);
