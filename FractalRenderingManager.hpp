@@ -18,7 +18,7 @@
 struct FractalRenderingManager
 {
   // fractal rendering
-  uint8_t *       data{nullptr};
+  uint32_t *       data{nullptr};
   std::size_t     max_iterations{64};
   frr::ThreadPool tp;
 
@@ -42,7 +42,7 @@ struct FractalRenderingManager
     }
 
     
-    this->data = new std::uint8_t[frr::width * frr::height]();
+    this->data = new std::uint32_t[frr::width * frr::height]();
     this->tp.init(this->data);
     
     InitWindow(frr::width, frr::height, "Fractal Rendering");
@@ -50,8 +50,8 @@ struct FractalRenderingManager
       this->data,                         /* data */
       frr::width,                         /* width */
       frr::height,                        /* height */
-      PIXELFORMAT_UNCOMPRESSED_GRAYSCALE, /* format */
-      1                                   /* mipmaps */
+      1,                                  /* mipmaps */
+      PIXELFORMAT_UNCOMPRESSED_R8G8B8A8   /* format */
     };
     this->texture = LoadTextureFromImage(image);
     this->shader = LoadShader(0, default_shader_location.c_str());

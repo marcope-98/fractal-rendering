@@ -6,7 +6,7 @@
 
 namespace frr
 {
-  auto naive(std::uint8_t *const data,
+  auto naive(std::uint32_t *const data,
              const Vector_f64 &TL, const Vector_f64 &delta,
              const std::size_t max_iteration) -> void;
 

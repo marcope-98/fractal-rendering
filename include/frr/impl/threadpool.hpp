@@ -16,7 +16,7 @@ namespace frr
     std::size_t   max_iterations{};
     bool          alive{true};
     std::size_t   row_start{}, row_end{};
-    std::uint8_t *data{nullptr};
+    std::uint32_t *data{nullptr};
 
     std::thread             thread;
 
@@ -28,7 +28,7 @@ namespace frr
   {
     Worker workers[frr::n_threads];
 
-    auto init(std::uint8_t *const data) -> void;
+    auto init(std::uint32_t *const data) -> void;
     auto run(const Vector_f64 &TL, const Vector_f64 &delta, const std::size_t max_iterations) -> void;
     auto shutdown() -> void;
   };

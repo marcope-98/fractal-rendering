@@ -18,7 +18,6 @@ auto frr::Worker::start(const Vector_f64 &TL, const Vector_f64 &delta,
 
 auto frr::Worker::run() -> void
 {
-  const __m256i FF   = _mm256_set1_epi64x(0x1Full);
   const __m256i one  = _mm256_set1_epi64x(1);
   const __m256d two  = _mm256_set1_pd(2.0);
   const __m256d four = _mm256_set1_pd(4.0);
@@ -59,11 +58,10 @@ auto frr::Worker::run() -> void
         if (_mm256_movemask_pd(_mm256_castsi256_pd(condition2)) > 0)
           goto loop;
 
-        iteration                              = _mm256_and_si256(iteration, FF);
-        this->data[row * frr::width + col + 0] = frr::palette[_mm256_extract_epi64(iteration, 0)];
-        this->data[row * frr::width + col + 1] = frr::palette[_mm256_extract_epi64(iteration, 1)];
-        this->data[row * frr::width + col + 2] = frr::palette[_mm256_extract_epi64(iteration, 2)];
-        this->data[row * frr::width + col + 3] = frr::palette[_mm256_extract_epi64(iteration, 3)];
+        this->data[row * frr::width + col + 0] = _mm256_extract_epi64(iteration, 0);
+        this->data[row * frr::width + col + 1] = _mm256_extract_epi64(iteration, 1);
+        this->data[row * frr::width + col + 2] = _mm256_extract_epi64(iteration, 2);
+        this->data[row * frr::width + col + 3] = _mm256_extract_epi64(iteration, 3);
         x0                                     = _mm256_add_pd(x0, x_step);
       }
       y0 = _mm256_add_pd(y0, y_delta);
@@ -72,7 +70,7 @@ auto frr::Worker::run() -> void
   }
 }
 
-auto frr::ThreadPool::init(std::uint8_t *const data) -> void
+auto frr::ThreadPool::init(std::uint32_t *const data) -> void
 {
   constexpr std::size_t rows_per_thread{frr::height / frr::n_threads};
   for (std::size_t i{}; i < frr::n_threads; ++i)
