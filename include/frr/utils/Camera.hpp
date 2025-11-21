@@ -1,5 +1,6 @@
 #ifndef FRR_UTILS_CAMERA_HPP_
 #define FRR_UTILS_CAMERA_HPP_
+#include "frr/common.hpp"
 #include "frr/utils/Vector.hpp"
 
 #include <cmath>
@@ -35,14 +36,16 @@ namespace frr
     }
 
 
-    Vector_f64 getTL() const { return this->screen2world(this->world_lower_bound) * Vector_f64{frr::mx, frr::my} + Vector_f64{frr::qx, frr::qy}; }
-    Vector_f64 getBR() const { return this->screen2world(this->world_upper_bound) * Vector_f64{frr::mx, frr::my} + Vector_f64{frr::qx, frr::qy}; }
+    Vector_f64 getTL() const { return this->screen2world(this->world_lower_bound) * this->m + this->q; }
+    Vector_f64 getBR() const { return this->screen2world(this->world_upper_bound) * this->m + this->q; }
 
     Vector_f64 screen2world(const Vector_f64 &screen) const { return ((screen - this->offset) / this->zoom_factor) + this->target; }
 
   private:
     constexpr static Vector_f64 world_lower_bound{0.0, 0.0};
     constexpr static Vector_f64 world_upper_bound{frr::width, frr::height};
+    constexpr static Vector_f64 m{frr::mx, frr::my};
+    constexpr static Vector_f64 q{frr::qx, frr::qy};
   };
 } // namespace frr
 
