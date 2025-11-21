@@ -38,6 +38,7 @@ namespace frr
 
     Vector_f64 getTL() const { return this->screen2world(this->world_lower_bound) * this->m + this->q; }
     Vector_f64 getBR() const { return this->screen2world(this->world_upper_bound) * this->m + this->q; }
+    Vector_f64 delta() const { return this->delta_zoom_1 / this->zoom_factor; }
 
     Vector_f64 screen2world(const Vector_f64 &screen) const { return ((screen - this->offset) / this->zoom_factor) + this->target; }
 
@@ -46,6 +47,7 @@ namespace frr
     constexpr static Vector_f64 world_upper_bound{frr::width, frr::height};
     constexpr static Vector_f64 m{frr::mx, frr::my};
     constexpr static Vector_f64 q{frr::qx, frr::qy};
+    constexpr static Vector_f64 delta_zoom_1{world_upper_bound * m * Vector_f64{inv_w, inv_h}};
   };
 } // namespace frr
 
