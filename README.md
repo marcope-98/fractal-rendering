@@ -42,7 +42,7 @@ Originally, this project computed the colorouing of the Mandelbrot set in the im
 
 So far three shaders are provided:
 - `grayscale.fs` containing the original palette used during development
-- `eriksonn.fs` containing the palette used by OneLoneCoder in its youtube video (check out his [youtube video](https://youtu.be/PBvLs88hvJ8?si=yB6VJUSON7TMARbi))
+- `eriksonn.fs` containing the palette used by OneLoneCoder in its [youtube video](https://youtu.be/PBvLs88hvJ8?si=yB6VJUSON7TMARbi)
 - `wikipedia.fs` containing the [reversed engineered](https://stackoverflow.com/questions/16500656/which-color-gradient-is-used-to-color-mandelbrot-in-wikipedia) palette used in the [Wikipedia article](https://en.wikipedia.org/wiki/Mandelbrot_set) about the Manderlbrot set.
 
 ## Dependencies
