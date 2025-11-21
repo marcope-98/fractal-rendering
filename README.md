@@ -19,7 +19,7 @@ By leveraging raylib, the user can interactively explore the fractal space with 
   - **2**: Select AVX/AVX2 implementation
   - **3**: Select AVX/AVX2 + Threads implementation
   - **4**: Select AVX/AVX2 + ThreadPool implementation
-- Fixed window size (1280x720) and grayscale coloring are used to keep rendering performance consistent and predictable.
+- Fixed window size (1280x720) is used to keep rendering performance consistent and predictable and to apply some precomputation.
 
 ## Optimization Techniques
 The project explores and compares the following implementations
@@ -35,6 +35,16 @@ Possible explanations include:
 - **Improved cache locality**: Each thread processes a contiguous pixel region reducing cache misses.
 - **Thread count overhead balance**: With 36 threads, the creation/destruction cost in method 3 may be effectively masked by the workload size.
 
+In fact, later testing revealed that pushing the number of threads to the number of rows in the screen buffer (720) resulted in a substantial improvement of the threadpool implementation performance over the other methods.
+
+## Shaders
+Originally, this project computed the colorouing of the Mandelbrot set in the implementation code. As time passed I have moved this responsibility to the GPU by providing shaders that can be found... wait for it... in the `shaders` folder.
+
+So far three shaders are provided:
+- `grayscale.fs` containing the original palette used during development
+- `eriksonn.fs` containing the palette used by OneLoneCoder in its youtube video (check out his [youtube video](https://youtu.be/PBvLs88hvJ8?si=yB6VJUSON7TMARbi))
+- `wikipedia.fs` containing the [reversed engineered](https://stackoverflow.com/questions/16500656/which-color-gradient-is-used-to-color-mandelbrot-in-wikipedia) palette used in the [Wikipedia article](https://en.wikipedia.org/wiki/Mandelbrot_set) about the Manderlbrot set.
+
 ## Dependencies
 - C++17 or newer
 - raylib 5.5 (graphics and input handling)
@@ -47,5 +57,5 @@ $ cd fractal-rendering
 $ mkdir build && cd build
 $ cmake ..
 $ make -j4
-$ ./fractal_rendering
+$ ./fractal_rendering <path-to-shader.fs>
 ```
