@@ -5,17 +5,14 @@ auto frr::naive(std::uint8_t *const data,
                 const Vector_f64 &TL, const Vector_f64 &BR,
                 const std::size_t max_iteration) -> void
 {
-  constexpr double w              = static_cast<double>(frr::width);
-  constexpr double h              = static_cast<double>(frr::height);
-  constexpr double x0_factor      = 3.0 / w;
-  constexpr double y0_factor      = 2.0 / h;
-  constexpr double x_delta_factor = 3.0 / (w * w);
-  constexpr double y_delta_factor = 2.0 / (h * h);
+  constexpr double inv_w      = 1.0 / static_cast<double>(frr::width);
+  constexpr double inv_h      = 1.0 / static_cast<double>(frr::height);
 
-  const double x_delta  = (BR.x - TL.x) * x_delta_factor;
-  const double y_delta  = (BR.y - TL.y) * y_delta_factor;
-  const double x_origin = TL.x * x0_factor - 2.0;
-  double       y0       = TL.y * y0_factor - 1.0;
+  const Vector_f64 delta = BR - TL;
+  const double x_delta   = delta.x * inv_w;
+  const double y_delta   = delta.y * inv_h;
+  const double x_origin  = TL.x;
+  double       y0        = TL.y;
   for (std::size_t row{}; row < frr::height; ++row)
   {
     double x0 = x_origin;

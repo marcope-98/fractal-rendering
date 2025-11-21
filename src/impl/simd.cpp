@@ -7,25 +7,23 @@ auto frr::simd(std::uint8_t *const data,
                const Vector_f64 TL, const Vector_f64 BR,
                const std::size_t max_iteration) -> void
 {
-  constexpr double w              = static_cast<double>(frr::width);
-  constexpr double h              = static_cast<double>(frr::height);
-  constexpr double x0_factor      = 3.0 / w;
-  constexpr double y0_factor      = 2.0 / h;
-  constexpr double x_delta_factor = 3.0 / (w * w);
-  constexpr double y_delta_factor = 2.0 / (h * h);
+  constexpr double inv_w   = 1.0 / static_cast<double>(frr::width);
+  constexpr double inv_h   = 1.0 / static_cast<double>(frr::height);
+  constexpr double inv_4xw = 4.0 / static_cast<double>(frr::width);
 
+  const Vector_f64 delta = BR - TL;
   const __m256i FF       = _mm256_set1_epi64x(0x1Full);
   const __m256i one      = _mm256_set1_epi64x(1);
   const __m256d two      = _mm256_set1_pd(2.0);
   const __m256d four     = _mm256_set1_pd(4.0);
   const __m256i max_iter = _mm256_set1_epi64x(max_iteration);
 
-  const __m256d x_delta  = _mm256_set1_pd((BR.x - TL.x) * x_delta_factor);
-  const __m256d y_delta  = _mm256_set1_pd((BR.y - TL.y) * y_delta_factor);
-  const __m256d x_step   = _mm256_mul_pd(x_delta, four);
-  const __m256d x_origin = _mm256_add_pd(_mm256_set1_pd(TL.x * x0_factor - 2.0),
+  const __m256d x_delta  = _mm256_set1_pd(delta.x * inv_w);
+  const __m256d y_delta  = _mm256_set1_pd(delta.y * inv_h);
+  const __m256d x_step   = _mm256_set1_pd(delta.x * inv_4xw);
+  const __m256d x_origin = _mm256_add_pd(_mm256_set1_pd(TL.x),
                                          _mm256_mul_pd(x_delta, _mm256_set_pd(3.0, 2.0, 1.0, 0.0)));
-  __m256d       y0       = _mm256_set1_pd(TL.y * y0_factor - 1.0);
+  __m256d       y0       = _mm256_set1_pd(TL.y);
   for (std::size_t row{}; row < frr::height; ++row)
   {
     __m256d x0 = x_origin;

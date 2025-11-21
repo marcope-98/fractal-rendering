@@ -11,6 +11,7 @@ namespace frr
 
     Vector        operator+(const Vector &other) const { return {this->x + other.x, this->y + other.y}; }
     Vector        operator-(const Vector &other) const { return {this->x - other.x, this->y - other.y}; }
+    Vector        operator*(const Vector &other) const { return {this->x * other.x, this->y * other.y}; }
     friend Vector operator*(T rhs, const Vector &lhs) { return {lhs.x * rhs, lhs.y * rhs}; }
     Vector        operator*(T rhs) const { return {this->x * rhs, this->y * rhs}; }
     Vector        operator/(T rhs) const { return {this->x / rhs, this->y / rhs}; }

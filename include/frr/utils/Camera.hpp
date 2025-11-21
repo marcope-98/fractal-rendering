@@ -35,8 +35,8 @@ namespace frr
     }
 
 
-    Vector_f64 getTL() const { return this->screen2world(this->world_lower_bound); }
-    Vector_f64 getBR() const { return this->screen2world(this->world_upper_bound); }
+    Vector_f64 getTL() const { return this->screen2world(this->world_lower_bound) * Vector_f64{frr::mx, frr::my} + Vector_f64{frr::qx, frr::qy}; }
+    Vector_f64 getBR() const { return this->screen2world(this->world_upper_bound) * Vector_f64{frr::mx, frr::my} + Vector_f64{frr::qx, frr::qy}; }
 
     Vector_f64 screen2world(const Vector_f64 &screen) const { return ((screen - this->offset) / this->zoom_factor) + this->target; }
 

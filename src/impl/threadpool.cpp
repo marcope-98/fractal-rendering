@@ -8,23 +8,16 @@ std::mutex               mtx;
 std::condition_variable  cv;
 std::atomic<std::size_t> completed{0};
 
-auto frr::Worker::start(const Vector_f64 &TL, const Vector_f64 &BR,
+auto frr::Worker::start(const Vector_f64 &TL, const Vector_f64 &delta,
                         const std::size_t max_iterations) -> void
 {
-  this->BR             = BR;
   this->TL             = TL;
+  this->delta          = delta;
   this->max_iterations = max_iterations;
 }
 
 auto frr::Worker::run() -> void
 {
-  constexpr double w              = static_cast<double>(frr::width);
-  constexpr double h              = static_cast<double>(frr::height);
-  constexpr double x0_factor      = 3.0 / w;
-  constexpr double y0_factor      = 2.0 / h;
-  constexpr double x_delta_factor = 3.0 / (w * w);
-  constexpr double y_delta_factor = 2.0 / (h * h);
-
   const __m256i FF   = _mm256_set1_epi64x(0x1Full);
   const __m256i one  = _mm256_set1_epi64x(1);
   const __m256d two  = _mm256_set1_pd(2.0);
@@ -38,12 +31,12 @@ auto frr::Worker::run() -> void
     }
     const __m256i max_iter = _mm256_set1_epi64x(this->max_iterations);
 
-    const __m256d x_delta  = _mm256_set1_pd((this->BR.x - this->TL.x) * x_delta_factor);
-    const __m256d y_delta  = _mm256_set1_pd((this->BR.y - this->TL.y) * y_delta_factor);
-    const __m256d x_step   = _mm256_mul_pd(x_delta, four);
-    const __m256d x_origin = _mm256_add_pd(_mm256_set1_pd(this->TL.x * x0_factor - 2.0),
+    const __m256d x_delta  = _mm256_set1_pd(this->delta.x);
+    const __m256d y_delta  = _mm256_set1_pd(this->delta.y);
+    const __m256d x_step   = _mm256_set1_pd(this->delta.x * 4.0);
+    const __m256d x_origin = _mm256_add_pd(_mm256_set1_pd(this->TL.x),
                                            _mm256_mul_pd(x_delta, _mm256_set_pd(3.0, 2.0, 1.0, 0.0)));
-    __m256d       y0       = _mm256_set1_pd(this->TL.y * y0_factor - 1.0 + this->row_start * (this->BR.y - this->TL.y) * y_delta_factor);
+    __m256d       y0       = _mm256_set1_pd(this->TL.y + this->row_start * this->delta.y);
     for (std::size_t row{this->row_start}; row < this->row_end; ++row)
     {
       __m256d x0 = x_origin;
@@ -97,8 +90,11 @@ auto frr::ThreadPool::init(std::uint8_t *const data) -> void
 auto frr::ThreadPool::run(const Vector_f64 &TL, const Vector_f64 &BR,
                           const std::size_t max_iterations) -> void
 {
+  constexpr double inv_w = 1.0 / static_cast<double>(frr::width);
+  constexpr double inv_h = 1.0 / static_cast<double>(frr::height);
+  const Vector_f64 delta = (BR - TL) * Vector_f64{inv_w, inv_h};
   for (std::size_t i{}; i < frr::n_threads; ++i)
-    this->workers[i].start(TL, BR, max_iterations);
+    this->workers[i].start(TL, delta, max_iterations);
   completed.store(0, std::memory_order::memory_order_release);
   cv.notify_all();
 

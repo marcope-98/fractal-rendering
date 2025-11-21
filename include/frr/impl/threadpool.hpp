@@ -12,7 +12,7 @@ namespace frr
 {
   struct Worker
   {
-    Vector_f64    BR{}, TL{};
+    Vector_f64    delta{}, TL{};
     std::size_t   max_iterations{};
     bool          alive{true};
     std::size_t   row_start{}, row_end{};

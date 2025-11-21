@@ -6,29 +6,22 @@
 #include <thread>
 
 static auto threads_simd(std::uint8_t *const    data,
-                         const frr::Vector_f64 &TL, const frr::Vector_f64 &BR,
+                         const frr::Vector_f64 &TL, const frr::Vector_f64 &delta,
                          const std::size_t row_start, const std::size_t row_end,
                          const std::size_t max_iteration)
 {
-  constexpr double w              = static_cast<double>(frr::width);
-  constexpr double h              = static_cast<double>(frr::height);
-  constexpr double x0_factor      = 3.0 / w;
-  constexpr double y0_factor      = 2.0 / h;
-  constexpr double x_delta_factor = 3.0 / (w * w);
-  constexpr double y_delta_factor = 2.0 / (h * h);
-
   const __m256i FF       = _mm256_set1_epi64x(0x1Full);
   const __m256i one      = _mm256_set1_epi64x(1);
   const __m256d two      = _mm256_set1_pd(2.0);
   const __m256d four     = _mm256_set1_pd(4.0);
   const __m256i max_iter = _mm256_set1_epi64x(max_iteration);
 
-  const __m256d x_delta  = _mm256_set1_pd((BR.x - TL.x) * x_delta_factor);
-  const __m256d y_delta  = _mm256_set1_pd((BR.y - TL.y) * y_delta_factor);
-  const __m256d x_step   = _mm256_mul_pd(x_delta, four);
-  const __m256d x_origin = _mm256_add_pd(_mm256_set1_pd(TL.x * x0_factor - 2.0),
+  const __m256d x_delta  = _mm256_set1_pd(delta.x);
+  const __m256d y_delta  = _mm256_set1_pd(delta.y);
+  const __m256d x_step   = _mm256_set1_pd(delta.x * 4.0);
+  const __m256d x_origin = _mm256_add_pd(_mm256_set1_pd(TL.x),
                                          _mm256_mul_pd(x_delta, _mm256_set_pd(3.0, 2.0, 1.0, 0.0)));
-  __m256d       y0       = _mm256_set1_pd(TL.y * y0_factor - 1.0 + row_start * (BR.y - TL.y) * y_delta_factor);
+  __m256d       y0       = _mm256_set1_pd(TL.y + row_start * delta.y);
   for (std::size_t row{row_start}; row < row_end; ++row)
   {
     __m256d x0 = x_origin;
@@ -68,12 +61,16 @@ auto frr::threads(std::uint8_t *const data,
                   const Vector_f64 &TL, const Vector_f64 &BR,
                   const std::size_t max_iteration) -> void
 {
+  constexpr double      inv_w{1.0 / static_cast<double>(frr::width)};
+  constexpr double      inv_h{1.0 / static_cast<double>(frr::height)}; 
   constexpr std::size_t rows_per_thread{frr::height / frr::n_threads};
+
   std::thread           threads[frr::n_threads];
+  const Vector_f64 delta = (BR - TL) * Vector_f64{inv_w, inv_h};
   for (std::size_t i{}; i < frr::n_threads; ++i)
     threads[i] = std::thread(&threads_simd,
                              data,
-                             TL, BR,
+                             TL, delta,
                              i * rows_per_thread, (i + 1) * rows_per_thread,
                              max_iteration);
 
