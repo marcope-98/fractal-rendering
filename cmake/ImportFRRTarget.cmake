@@ -22,7 +22,7 @@ target_include_directories(${FRR_LIBRARY_NAME}
 target_compile_options(${FRR_LIBRARY_NAME}
   PRIVATE
   $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
-  -Wall -Wextra -Werror -Wpedantic -O2 -mavx -mavx2 -mfma>
+  -Wall -Wextra -Werror -Wpedantic -O2 -ffast-math -mavx -mavx2 -mfma>
 )
 
 target_link_libraries(${FRR_LIBRARY_NAME} Threads::Threads)
