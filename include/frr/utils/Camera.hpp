@@ -3,7 +3,7 @@
 #include "frr/common.hpp"
 #include "frr/utils/Vector.hpp"
 
-#include <cmath>
+#include <algorithm>
 
 namespace frr
 {
@@ -23,8 +23,8 @@ namespace frr
       Vector_f64 mouseWorldPos = this->screen2world(mouse_position);
       this->offset             = mouse_position;
       this->target             = mouseWorldPos;
-      this->zoom_factor       += this->zoom_factor* wheel * 0.1;
-      this->zoom_factor        = std::clamp(this->zoom_factor, 1.0, frr::zoom_limit); 
+      this->zoom_factor += this->zoom_factor * wheel * 0.1;
+      this->zoom_factor = std::clamp(this->zoom_factor, 1.0, frr::zoom_limit);
     }
 
     void reset()
@@ -33,7 +33,6 @@ namespace frr
       this->offset      = {0.0, 0.0};
       this->zoom_factor = 1.0;
     }
-
 
     Vector_f64 getTL() const { return this->screen2world(this->world_lower_bound) * this->m + this->q; }
     Vector_f64 getBR() const { return this->screen2world(this->world_upper_bound) * this->m + this->q; }
