@@ -34,11 +34,11 @@ namespace frr
       this->zoom_factor = 1.0;
     }
 
-    Vector_f64 getTL() const { return this->screen2world(this->world_lower_bound) * this->m + this->q; }
-    Vector_f64 getBR() const { return this->screen2world(this->world_upper_bound) * this->m + this->q; }
-    Vector_f64 delta() const { return this->m / this->zoom_factor; }
+    [[nodiscard]] Vector_f64 getTL() const { return this->screen2world(this->world_lower_bound) * this->m + this->q; }
+    [[nodiscard]] Vector_f64 getBR() const { return this->screen2world(this->world_upper_bound) * this->m + this->q; }
+    [[nodiscard]] Vector_f64 delta() const { return this->m / this->zoom_factor; }
 
-    Vector_f64 screen2world(const Vector_f64 &screen) const { return ((screen - this->offset) / this->zoom_factor) + this->target; }
+    [[nodiscard]] Vector_f64 screen2world(const Vector_f64 &screen) const { return ((screen - this->offset) / this->zoom_factor) + this->target; }
 
   private:
     constexpr static Vector_f64 world_lower_bound{0.0, 0.0};
