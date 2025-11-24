@@ -4,13 +4,13 @@
 #include "FractalRenderingManager.hpp"
 #include "raylib.h"
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-  if (argc != 2) 
+  if (argc != 2)
   {
     std::cerr << "Incorrect number of arguments provided. Expected 1, got " << argc - 1 << "\n";
     return 1;
-  }    
+  }
 
   FractalRenderingManager frm(argv[1]);
   while (!WindowShouldClose())

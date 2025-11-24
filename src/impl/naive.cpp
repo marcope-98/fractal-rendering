@@ -11,7 +11,7 @@ auto frr::naive(std::uint32_t *const data,
     x0 = TL.x;
     for (std::size_t col{}; col < frr::width; ++col)
     {
-      double      x{}, y{}, x2{}, y2{};
+      double        x{}, y{}, x2{}, y2{};
       std::uint32_t iteration{};
       while (x2 + y2 <= 4 && iteration < max_iteration)
       {

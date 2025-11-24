@@ -6,9 +6,9 @@
 
 namespace frr
 {
-  inline constexpr std::size_t  width{1280};
-  inline constexpr std::size_t  height{720};
-  inline constexpr std::size_t  n_threads{36};
+  inline constexpr std::size_t width{1280};
+  inline constexpr std::size_t height{720};
+  inline constexpr std::size_t n_threads{36};
 
   inline constexpr double mandelbrot_min_x{-2.0};
   inline constexpr double mandelbrot_max_x{+1.0};
@@ -16,7 +16,7 @@ namespace frr
   inline constexpr double mandelbrot_max_y{+1.0};
   inline constexpr double mandelbrot_size_x{mandelbrot_max_x - mandelbrot_min_x};
   inline constexpr double mandelbrot_size_y{mandelbrot_max_y - mandelbrot_min_y};
-  
+
   inline constexpr double mx{mandelbrot_size_x / static_cast<double>(width)};
   inline constexpr double my{mandelbrot_size_y / static_cast<double>(height)};
   inline constexpr double qx{mandelbrot_min_x};

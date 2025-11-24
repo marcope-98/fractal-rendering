@@ -5,7 +5,7 @@
 #include <immintrin.h>
 #include <thread>
 
-static auto threads_simd(std::uint32_t *const    data,
+static auto threads_simd(std::uint32_t *const   data,
                          const frr::Vector_f64 &TL, const frr::Vector_f64 &delta,
                          const std::size_t row_start, const std::size_t row_end,
                          const std::size_t max_iteration)
@@ -59,7 +59,7 @@ auto frr::threads(std::uint32_t *const data,
 {
   constexpr static std::size_t rows_per_thread{frr::height / frr::n_threads};
 
-  std::thread           threads[frr::n_threads];
+  std::thread threads[frr::n_threads];
   for (std::size_t i{}; i < frr::n_threads; ++i)
     threads[i] = std::thread(&threads_simd,
                              data,

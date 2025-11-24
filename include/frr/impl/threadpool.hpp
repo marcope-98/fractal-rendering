@@ -12,13 +12,13 @@ namespace frr
 {
   struct Worker
   {
-    Vector_f64    delta{}, TL{};
-    std::size_t   max_iterations{};
-    bool          alive{true};
-    std::size_t   row_start{}, row_end{};
+    Vector_f64     delta{}, TL{};
+    std::size_t    max_iterations{};
+    bool           alive{true};
+    std::size_t    row_start{}, row_end{};
     std::uint32_t *data{nullptr};
 
-    std::thread             thread;
+    std::thread thread;
 
     auto start(const Vector_f64 &TL, const Vector_f64 &delta, const std::size_t max_iterations) -> void;
     auto run() -> void;

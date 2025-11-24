@@ -2,9 +2,9 @@
 #define FRACTALRENDERINGMANAGER_HPP_
 
 #include <cstdint>
-#include <string>
-#include <iostream>
 #include <filesystem>
+#include <iostream>
+#include <string>
 
 #include "raylib.h"
 
@@ -18,7 +18,7 @@
 struct FractalRenderingManager
 {
   // fractal rendering
-  uint32_t *       data{nullptr};
+  uint32_t       *data{nullptr};
   std::size_t     max_iterations{64};
   frr::ThreadPool tp;
 
@@ -30,9 +30,8 @@ struct FractalRenderingManager
   // user input
   frr::Camera cm;
   int         last_key_pressed{0};
-  
 
-  FractalRenderingManager(const std::string& shader_location)
+  FractalRenderingManager(const std::string &shader_location)
   {
     if (!std::filesystem::exists(std::filesystem::path{shader_location}))
     {
@@ -42,19 +41,18 @@ struct FractalRenderingManager
 
     this->data = new std::uint32_t[frr::width * frr::height]();
     this->tp.init(this->data);
-    
+
     InitWindow(frr::width, frr::height, "Fractal Rendering");
     Image image = {
-      this->data,                         /* data */
-      frr::width,                         /* width */
-      frr::height,                        /* height */
-      1,                                  /* mipmaps */
-      PIXELFORMAT_UNCOMPRESSED_R8G8B8A8   /* format */
+        this->data,                       /* data */
+        frr::width,                       /* width */
+        frr::height,                      /* height */
+        1,                                /* mipmaps */
+        PIXELFORMAT_UNCOMPRESSED_R8G8B8A8 /* format */
     };
     this->texture = LoadTextureFromImage(image);
-    this->shader = LoadShader(0, shader_location.c_str());
+    this->shader  = LoadShader(0, shader_location.c_str());
   }
-
 
   ~FractalRenderingManager()
   {
