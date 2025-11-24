@@ -15,15 +15,19 @@ float palette_b[16] = float[](15, 26, 47, 73, 100, 138, 177, 209, 229, 248, 191,
 void main()
 {
     vec4 texelColor  = texture(texture0, fragTexCoord);
-    int n = int(texelColor.r * 255.0 + 0.5);
-    if (n == 0 || n == max_iterations)
-    {
-        finalColor = vec4(0.0, 0.0, 0.0, 1.0);
-    }
-    else
+    int byte0 = int(texelColor.r * 255.0); 
+    int byte1 = int(texelColor.g * 255.0) <<  8; 
+    int byte2 = int(texelColor.b * 255.0) << 16; 
+    int byte3 = int(texelColor.a * 255.0) << 24; 
+    int n = byte0 + byte1 + byte2 + byte3;
+    if (n > 0 && n < max_iterations)
     {
         int index = n % 16;
         finalColor = vec4(palette_r[index] / 255, palette_g[index] / 255, palette_b[index] / 255, 1.0);
+    }
+    else
+    {
+        finalColor = vec4(0.0, 0.0, 0.0, 1.0);
     }
 }
 
