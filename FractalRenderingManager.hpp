@@ -111,6 +111,7 @@ struct FractalRenderingManager
   void render(const std::string &duration)
   {
     UpdateTexture(this->texture, this->data);
+    SetShaderValue(this->shader, GetShaderLocation(this->shader, "max_iterations"), &this->max_iterations, SHADER_UNIFORM_INT);
     // clang-format off
     BeginDrawing();
       BeginShaderMode(this->shader);

@@ -5,6 +5,7 @@ in vec4 fragColor;
 
 uniform sampler2D texture0;
 uniform vec4 colDiffuse;
+uniform int max_iterations;
 
 out vec4 finalColor;
 float palette_r[16] = float[](66, 25, 9, 4, 0, 12, 24, 57, 134, 211, 241, 248, 255, 204, 153, 106);
@@ -14,12 +15,16 @@ float palette_b[16] = float[](15, 26, 47, 73, 100, 138, 177, 209, 229, 248, 191,
 void main()
 {
     vec4 texelColor  = texture(texture0, fragTexCoord);
-    int byte0 = int(texelColor.r * 255.0+0.5) % 32;
-    if (byte0 > 16)
+    int n = int(texelColor.r * 255.0 + 0.5);
+    if (n == 0 || n == max_iterations)
     {
-        byte0 = 31 - byte0;
+        finalColor = vec4(0.0, 0.0, 0.0, 1.0);
     }
-    finalColor = vec4(palette_r[byte0] / 255, palette_g[byte0] / 255, palette_b[byte0] / 255, 1.0);
+    else
+    {
+        int index = n % 16;
+        finalColor = vec4(palette_r[index] / 255, palette_g[index] / 255, palette_b[index] / 255, 1.0);
+    }
 }
 
  
