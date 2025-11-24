@@ -6,13 +6,11 @@
 
 int main(int argc, char *argv[])
 {
-  if (argc != 2)
-  {
-    std::cerr << "Incorrect number of arguments provided. Expected 1, got " << argc - 1 << "\n";
-    return EXIT_FAILURE;
-  }
   try
   {
+    if (argc != 2)
+      throw std::invalid_argument{"Incorrect number of arguments provided. Expected 1, got " + std::to_string(argc + 1)};
+
     FractalRenderingManager frm(argv[1]);
     while (!WindowShouldClose())
     {
