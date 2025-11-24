@@ -9,19 +9,26 @@ int main(int argc, char *argv[])
   if (argc != 2)
   {
     std::cerr << "Incorrect number of arguments provided. Expected 1, got " << argc - 1 << "\n";
-    return 1;
+    return EXIT_FAILURE;
   }
-
-  FractalRenderingManager frm(argv[1]);
-  while (!WindowShouldClose())
+  try
   {
-    frm.user_input();
+    FractalRenderingManager frm(argv[1]);
+    while (!WindowShouldClose())
+    {
+      frm.user_input();
 
-    auto begin = std::chrono::steady_clock::now();
-    frm.run();
-    auto end = std::chrono::steady_clock::now();
+      auto begin = std::chrono::steady_clock::now();
+      frm.run();
+      auto end = std::chrono::steady_clock::now();
 
-    frm.render(std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()));
+      frm.render(std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()));
+    }
+  }
+  catch (const std::exception &e)
+  {
+    std::cerr << "Error: " << e.what() << "\n";
+    return EXIT_FAILURE;
   }
 
   return 0;
