@@ -33,11 +33,8 @@ struct FractalRenderingManager
 
   FractalRenderingManager(const std::string &shader_location)
   {
-    if (!std::filesystem::exists(std::filesystem::path{shader_location}))
-    {
-      std::cerr << "Specified shader file " << shader_location << " does not exist. Please check your path.\n";
-      exit(1);
-    }
+    if (std::filesystem::path path{shader_location}; !std::filesystem::exists(path) || !std::filesystem::is_regular_file(path))
+      throw std::filesystem::filesystem_error("The specified shader file does not exist: ", path, std::error_code());
 
     this->data = new std::uint32_t[frr::width * frr::height]();
     this->tp.init(this->data);
