@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.22 FATAL_ERROR)
 project(fractal_rendering VERSION 0.0.1 LANGUAGES C CXX)
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_CXX_STANDARD 17)
 
 # Raylib target
 include(ImportRaylibTarget)
