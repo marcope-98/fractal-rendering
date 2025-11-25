@@ -1,6 +1,7 @@
 #ifndef FRACTALRENDERINGMANAGER_HPP_
 #define FRACTALRENDERINGMANAGER_HPP_
 
+#include <algorithm>
 #include <cstdint>
 #include <filesystem>
 #include <string>
@@ -77,7 +78,7 @@ struct FractalRenderingManager
 
     // Keypad controls
     if (IsKeyPressed(KEY_KP_ADD)) this->max_iterations += 32;
-    if (IsKeyPressed(KEY_KP_SUBTRACT)) this->max_iterations = this->max_iterations == 32 ? 32 : this->max_iterations - 32;
+    if (IsKeyPressed(KEY_KP_SUBTRACT)) this->max_iterations = std::max<std::size_t>(32, this->max_iterations - 32);
 
     // Method selection
     if (int key = GetKeyPressed(); KEY_ONE <= key && key <= KEY_FOUR) this->last_key_pressed = key - KEY_ONE;
