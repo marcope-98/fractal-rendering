@@ -35,6 +35,7 @@ struct FractalRenderingManager
   RenderMethod current_method{RenderMethod::Naive};
   std::string  methods[4] = {"Naive", "AVX2", "Threads", "ThreadPool"};
   Shader       shader;
+  int          max_iterations_loc;
 
   // user input
   frr::Camera cm;
@@ -56,8 +57,9 @@ struct FractalRenderingManager
         1,                                /* mipmaps */
         PIXELFORMAT_UNCOMPRESSED_R8G8B8A8 /* format */
     };
-    this->texture = LoadTextureFromImage(image);
-    this->shader  = LoadShader(0, shader_location.c_str());
+    this->texture            = LoadTextureFromImage(image);
+    this->shader             = LoadShader(0, shader_location.c_str());
+    this->max_iterations_loc = GetShaderLocation(this->shader, "max_iterations");
   }
 
   ~FractalRenderingManager()
@@ -118,7 +120,7 @@ struct FractalRenderingManager
   void render(const std::string &duration)
   {
     UpdateTexture(this->texture, this->data);
-    SetShaderValue(this->shader, GetShaderLocation(this->shader, "max_iterations"), &this->max_iterations, SHADER_UNIFORM_INT);
+    SetShaderValue(this->shader, this->max_iterations_loc, &this->max_iterations, SHADER_UNIFORM_INT);
     // clang-format off
     BeginDrawing();
       BeginShaderMode(this->shader);
