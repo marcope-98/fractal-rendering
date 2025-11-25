@@ -28,7 +28,7 @@ static auto threads_simd(std::uint32_t *const   data,
     {
       __m256d x = _mm256_setzero_pd(), y = _mm256_setzero_pd();
       __m256d x2 = _mm256_setzero_pd(), y2 = _mm256_setzero_pd();
-      __m256i iteration = _mm256_setzero_si256();
+      __m256i iteration = one;
       __m256i condition1, condition2;
 
     loop:
