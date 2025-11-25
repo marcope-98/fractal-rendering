@@ -15,6 +15,14 @@
 #include "frr/impl/threads.hpp"
 #include "frr/utils/Camera.hpp"
 
+enum class RenderMethod
+{
+  Naive = 0,
+  AVX2,
+  Threads,
+  ThreadPool
+};
+
 struct FractalRenderingManager
 {
   // fractal rendering
@@ -23,9 +31,10 @@ struct FractalRenderingManager
   frr::ThreadPool tp;
 
   // raylib
-  Texture2D   texture;
-  std::string methods[4] = {"Naive", "AVX2", "Threads", "ThreadPool"};
-  Shader      shader;
+  Texture2D    texture;
+  RenderMethod current_method{RenderMethod::Naive};
+  std::string  methods[4] = {"Naive", "AVX2", "Threads", "ThreadPool"};
+  Shader       shader;
 
   // user input
   frr::Camera cm;
@@ -77,27 +86,30 @@ struct FractalRenderingManager
     }
 
     // Keypad controls
-    if (IsKeyPressed(KEY_KP_ADD)) this->max_iterations += 32;
-    if (IsKeyPressed(KEY_KP_SUBTRACT)) this->max_iterations = std::max<std::size_t>(32, this->max_iterations - 32);
+    if (IsKeyPressed(KEY_KP_ADD))
+      this->max_iterations += 32;
+    if (IsKeyPressed(KEY_KP_SUBTRACT))
+      this->max_iterations = std::max<std::size_t>(32, this->max_iterations - 32);
 
     // Method selection
-    if (int key = GetKeyPressed(); KEY_ONE <= key && key <= KEY_FOUR) this->last_key_pressed = key - KEY_ONE;
+    if (int key = GetKeyPressed(); KEY_ONE <= key && key <= KEY_FOUR)
+      this->current_method = static_cast<RenderMethod>(key - KEY_ONE);
   }
 
   void run()
   {
-    switch (this->last_key_pressed)
+    switch (this->current_method)
     {
-      case 0:
+      case RenderMethod::Naive:
         frr::naive(this->data, this->cm.getTL(), this->cm.delta(), this->max_iterations);
         break;
-      case 1:
+      case RenderMethod::AVX2:
         frr::simd(this->data, this->cm.getTL(), this->cm.delta(), this->max_iterations);
         break;
-      case 2:
+      case RenderMethod::Threads:
         frr::threads(this->data, this->cm.getTL(), this->cm.delta(), this->max_iterations);
         break;
-      case 3:
+      case RenderMethod::ThreadPool:
         tp.run(this->cm.getTL(), this->cm.delta(), this->max_iterations);
         break;
     }
@@ -113,7 +125,7 @@ struct FractalRenderingManager
         DrawTexture(this->texture, 0, 0, WHITE);
       EndShaderMode();
       DrawText((duration + " [ms] | Max Iterations: " + std::to_string(this->max_iterations) + 
-                                " | " + this->methods[this->last_key_pressed]).c_str(),
+                                " | " + this->methods[static_cast<int>(this->current_method)]).c_str(),
                 0, 0, 20, RAYWHITE);
     EndDrawing();
     // clang-format on
