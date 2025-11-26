@@ -38,7 +38,6 @@ struct FractalRenderingManager
 
   // user input
   frr::Camera cm;
-  int         last_key_pressed{0};
 
   FractalRenderingManager(const std::string &shader_location)
   {
