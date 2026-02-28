@@ -1,6 +1,6 @@
 #ifndef FRR_UTILS_VECTOR_HPP_
 #define FRR_UTILS_VECTOR_HPP_
-#include <cmath>
+
 namespace frr
 {
   template<class T>
