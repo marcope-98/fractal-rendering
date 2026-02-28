@@ -1,8 +1,7 @@
 #include <chrono>
 #include <iostream>
 
-#include "FractalRenderingManager.hpp"
-#include "raylib.h"
+#include "frr/utils/FractalRenderingManager.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -11,17 +10,8 @@ int main(int argc, char *argv[])
     if (argc != 2)
       throw std::invalid_argument{"Incorrect number of arguments provided. Expected 1, got " + std::to_string(argc - 1)};
 
-    FractalRenderingManager frm(argv[1]);
-    while (!WindowShouldClose())
-    {
-      frm.user_input();
-
-      auto begin = std::chrono::steady_clock::now();
-      frm.run();
-      auto end = std::chrono::steady_clock::now();
-
-      frm.render(std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()));
-    }
+    frr::FractalRenderingManager frm{argv[1]};
+    frm.run();
   }
   catch (const std::exception &e)
   {

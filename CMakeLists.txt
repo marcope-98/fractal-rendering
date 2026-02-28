@@ -10,9 +10,10 @@ include(ImportRaylibTarget)
 
 # FRactal Rendering (frr) library
 include(ImportFRRTarget)
+include(IgnoreExternalHeadersWarning)
+ignore_external_headers_warning(${FRR_LIBRARY_NAME} raylib)
 
 # Main Application target
-include(IgnoreExternalHeadersWarning)
 add_executable(fractal_rendering main.cpp)
 target_compile_options(fractal_rendering
   PRIVATE
@@ -20,5 +21,4 @@ target_compile_options(fractal_rendering
   -Wall -Wextra -Werror -Wpedantic -O2>
   )
 
-ignore_external_headers_warning(fractal_rendering raylib)
-target_link_libraries(fractal_rendering frr::frr raylib)
+target_link_libraries(fractal_rendering frr::frr)
