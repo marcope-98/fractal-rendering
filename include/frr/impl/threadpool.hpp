@@ -2,9 +2,10 @@
 #define FRR_IMPL_THREADPOOL_HPP_
 
 #include <atomic>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 #include <thread>
+
 
 #include "frr/common.hpp"
 #include "frr/utils/Vector.hpp"
@@ -13,11 +14,11 @@ namespace frr
 {
   struct Worker
   {
-    Vector_f64     delta{}, TL{};
-    std::size_t    max_iterations{};
-    bool           alive{true};
-    std::size_t    row_start{}, row_end{};
-    std::uint32_t *data{nullptr};
+    Vector_f64        delta{}, TL{};
+    std::size_t       max_iterations{};
+    std::atomic<bool> alive{true};
+    std::size_t       row_start{}, row_end{};
+    std::uint32_t    *data{nullptr};
 
     std::thread thread;
 
