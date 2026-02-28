@@ -15,8 +15,7 @@ namespace frr
     double     zoom_factor{1.0};
 
   public:
-    void pan(const Vector_f64 &delta) { this->target -= (delta / this->zoom_factor); }
-    void pan(Vector_f64 &&delta) { this->target -= (delta / this->zoom_factor); }
+    void pan(const Vector_f64& delta) { this->target -= (delta / this->zoom_factor); }
 
     void zoom(const Vector_f64 &mouse_position, double wheel)
     {
