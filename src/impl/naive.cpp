@@ -13,14 +13,16 @@ auto frr::naive(std::uint32_t *const data,
     {
       double        x{}, y{}, x2{}, y2{};
       std::uint32_t iteration{};
-      while (x2 + y2 <= 4 && iteration < max_iteration)
+      bool condition{};
+      do
       {
         y  = 2 * x * y + y0;
         x  = x2 - y2 + x0;
         x2 = x * x;
         y2 = y * y;
-        ++iteration;
-      }
+        condition = static_cast<std::uint32_t>(x2 + y2 <= 4 && iteration < max_iteration);
+        iteration += condition;
+      } while (condition);
       data[row * frr::width + col] = iteration;
       x0 += delta.x;
     }
