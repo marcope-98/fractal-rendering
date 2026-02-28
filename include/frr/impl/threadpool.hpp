@@ -6,7 +6,6 @@
 #include <cstdint>
 #include <thread>
 
-
 #include "frr/common.hpp"
 #include "frr/utils/Vector.hpp"
 
@@ -17,6 +16,7 @@ namespace frr
     Vector_f64        delta{}, TL{};
     std::size_t       max_iterations{};
     std::atomic<bool> alive{true};
+    bool              ready{false};
     std::size_t       row_start{}, row_end{};
     std::uint32_t    *data{nullptr};
 
