@@ -3,6 +3,7 @@
 
 #include <atomic>
 #include <cstdint>
+#include <cstddef>
 #include <thread>
 
 #include "frr/common.hpp"
