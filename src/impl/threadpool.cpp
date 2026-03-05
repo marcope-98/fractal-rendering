@@ -16,6 +16,7 @@ auto frr::Worker::start(const Vector_f64 &TL, const Vector_f64 &delta,
   this->TL             = TL;
   this->delta          = delta;
   this->max_iterations = max_iterations;
+  this->ready          = true;
 }
 
 auto frr::Worker::run() -> void
@@ -24,7 +25,9 @@ auto frr::Worker::run() -> void
   {
     {
       std::unique_lock<std::mutex> lm{mtx};
-      cv.wait(lm);
+      cv.wait(lm, [this]
+              { return this->ready || !this->alive; });
+      this->ready = false;
     }
     frr::simd(this->data,
               this->TL, this->delta,
@@ -50,8 +53,11 @@ auto frr::ThreadPool::init(std::uint32_t *const data) -> void
 auto frr::ThreadPool::run(const Vector_f64 &TL, const Vector_f64 &delta,
                           const std::size_t max_iterations) -> void
 {
-  for (std::size_t i{}; i < frr::n_threads; ++i)
-    this->workers[i].start(TL, delta, max_iterations);
+  {
+    std::unique_lock<std::mutex> lm{mtx};
+    for (std::size_t i{}; i < frr::n_threads; ++i)
+      this->workers[i].start(TL, delta, max_iterations);
+  }
   completed.store(0, std::memory_order::memory_order_release);
   cv.notify_all();
 
