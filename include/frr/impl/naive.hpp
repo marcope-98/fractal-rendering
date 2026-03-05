@@ -1,6 +1,8 @@
 #ifndef FRR_NAIVE_HPP_
 #define FRR_NAIVE_HPP_
+
 #include <cstdint>
+#include <cstddef>
 
 #include "frr/utils/Vector.hpp"
 

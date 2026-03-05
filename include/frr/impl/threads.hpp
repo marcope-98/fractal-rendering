@@ -1,9 +1,11 @@
 #ifndef FRR_IMPL_THREADS_HPP_
 #define FRR_IMPL_THREADS_HPP_
 
+#include <cstdint>
+#include <cstddef>
+
 #include "frr/utils/Vector.hpp"
 
-#include <cstdint>
 
 namespace frr
 {

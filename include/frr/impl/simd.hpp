@@ -1,8 +1,10 @@
 #ifndef FRR_SIMD_HPP_
 #define FRR_SIMD_HPP_
 
-#include "frr/utils/Vector.hpp"
 #include <cstdint>
+#include <cstddef>
+
+#include "frr/utils/Vector.hpp"
 
 namespace frr
 {
