@@ -20,7 +20,7 @@ auto frr::Worker::start(const Vector_f64 &TL, const Vector_f64 &delta,
 
 auto frr::Worker::run() -> void
 {
-  while (this->alive)
+  while (this->alive.load(std::memory_order_relaxed))
   {
     {
       std::unique_lock<std::mutex> lm{mtx};
@@ -40,7 +40,6 @@ auto frr::ThreadPool::init(std::uint32_t *const data) -> void
   constexpr static std::size_t rows_per_thread{frr::height / frr::n_threads};
   for (std::size_t i{}; i < frr::n_threads; ++i)
   {
-    this->workers[i].alive     = true;
     this->workers[i].data      = data;
     this->workers[i].row_start = i * rows_per_thread;
     this->workers[i].row_end   = (i + 1) * rows_per_thread;
@@ -63,7 +62,7 @@ auto frr::ThreadPool::run(const Vector_f64 &TL, const Vector_f64 &delta,
 auto frr::ThreadPool::shutdown() -> void
 {
   for (std::size_t i{}; i < frr::n_threads; i++)
-    this->workers[i].alive = false;
+    this->workers[i].alive.store(false, std::memory_order_relaxed);
   cv.notify_all();
 
   for (std::size_t i{}; i < frr::n_threads; ++i)
