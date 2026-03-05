@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
   try
   {
     if (argc != 2)
-      throw std::invalid_argument{"Incorrect number of arguments provided. Expected 1, got " + std::to_string(argc + 1)};
+      throw std::invalid_argument{"Incorrect number of arguments provided. Expected 1, got " + std::to_string(argc - 1)};
 
     FractalRenderingManager frm(argv[1]);
     while (!WindowShouldClose())
