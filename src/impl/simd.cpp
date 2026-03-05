@@ -41,10 +41,10 @@ auto frr::simd(std::uint32_t *const data,
         iteration  = _mm256_add_epi64(iteration, _mm256_and_si256(one, condition2));
       } while (_mm256_movemask_pd(_mm256_castsi256_pd(condition2)) > 0);
 
-      data[row * frr::width + col + 0] = _mm256_extract_epi64(iteration, 0);
-      data[row * frr::width + col + 1] = _mm256_extract_epi64(iteration, 1);
-      data[row * frr::width + col + 2] = _mm256_extract_epi64(iteration, 2);
-      data[row * frr::width + col + 3] = _mm256_extract_epi64(iteration, 3);
+      data[row * frr::width + col + 0] = static_cast<std::uint32_t>(_mm256_extract_epi64(iteration, 0));
+      data[row * frr::width + col + 1] = static_cast<std::uint32_t>(_mm256_extract_epi64(iteration, 1));
+      data[row * frr::width + col + 2] = static_cast<std::uint32_t>(_mm256_extract_epi64(iteration, 2));
+      data[row * frr::width + col + 3] = static_cast<std::uint32_t>(_mm256_extract_epi64(iteration, 3));
       x0                               = _mm256_add_pd(x0, x_step);
     }
     y0 = _mm256_add_pd(y0, y_delta);
