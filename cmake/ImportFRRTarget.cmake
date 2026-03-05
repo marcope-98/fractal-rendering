@@ -8,6 +8,10 @@ add_library(${FRR_LIBRARY_NAME}
   src/impl/simd.cpp
   src/impl/threads.cpp
   src/impl/threadpool.cpp
+  src/utils/Window.cpp
+  src/utils/FractalRenderer.cpp
+  src/utils/InputHandler.cpp
+  src/utils/FractalRenderingManager.cpp
 )
 add_library(${FRR_LIBRARY_NAME}::${FRR_LIBRARY_NAME} ALIAS ${FRR_LIBRARY_NAME})
 
@@ -25,4 +29,4 @@ target_compile_options(${FRR_LIBRARY_NAME}
   -Wall -Wextra -Werror -Wpedantic -O2 -ffast-math -mavx -mavx2 -mfma>
 )
 
-target_link_libraries(${FRR_LIBRARY_NAME} Threads::Threads)
+target_link_libraries(${FRR_LIBRARY_NAME} Threads::Threads raylib)
