@@ -20,8 +20,8 @@ auto frr::naive(std::uint32_t *const data,
         x  = x2 - y2 + x0;
         x2 = x * x;
         y2 = y * y;
-        condition = static_cast<std::uint32_t>(x2 + y2 <= 4 && iteration < max_iteration);
-        iteration += condition;
+        condition = x2 + y2 <= 4 && iteration < max_iteration;
+        iteration += static_cast<std::uint32_t>(condition);
       } while (condition);
       data[row * frr::width + col] = iteration;
       x0 += delta.x;
