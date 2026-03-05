@@ -29,17 +29,17 @@ auto frr::simd(std::uint32_t *const data,
       __m256i iteration = one;
       __m256i condition1, condition2;
 
-    loop:
-      y          = _mm256_fmadd_pd(two, _mm256_mul_pd(x, y), y0);
-      x          = _mm256_add_pd(_mm256_sub_pd(x2, y2), x0);
-      x2         = _mm256_mul_pd(x, x);
-      y2         = _mm256_mul_pd(y, y);
-      condition1 = _mm256_castpd_si256(_mm256_cmp_pd(_mm256_add_pd(x2, y2), four, _CMP_LE_OS));
-      condition2 = _mm256_cmpgt_epi64(max_iter, iteration);
-      condition2 = _mm256_and_si256(condition1, condition2);
-      iteration  = _mm256_add_epi64(iteration, _mm256_and_si256(one, condition2));
-      if (_mm256_movemask_pd(_mm256_castsi256_pd(condition2)) > 0)
-        goto loop;
+      do
+      {
+        y          = _mm256_fmadd_pd(two, _mm256_mul_pd(x, y), y0);
+        x          = _mm256_add_pd(_mm256_sub_pd(x2, y2), x0);
+        x2         = _mm256_mul_pd(x, x);
+        y2         = _mm256_mul_pd(y, y);
+        condition1 = _mm256_castpd_si256(_mm256_cmp_pd(_mm256_add_pd(x2, y2), four, _CMP_LE_OS));
+        condition2 = _mm256_cmpgt_epi64(max_iter, iteration);
+        condition2 = _mm256_and_si256(condition1, condition2);
+        iteration  = _mm256_add_epi64(iteration, _mm256_and_si256(one, condition2));
+      } while (_mm256_movemask_pd(_mm256_castsi256_pd(condition2)) > 0);
 
       data[row * frr::width + col + 0] = _mm256_extract_epi64(iteration, 0);
       data[row * frr::width + col + 1] = _mm256_extract_epi64(iteration, 1);
