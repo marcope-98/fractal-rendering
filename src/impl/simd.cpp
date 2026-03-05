@@ -5,7 +5,8 @@
 
 auto frr::simd(std::uint32_t *const data,
                const Vector_f64 &TL, const Vector_f64 &delta,
-               const std::size_t max_iteration) -> void
+               const std::size_t max_iteration,
+               const std::size_t row_start, const std::size_t row_end) -> void
 {
   const __m256i one      = _mm256_set1_epi64x(1);
   const __m256d two      = _mm256_set1_pd(2.0);
@@ -17,8 +18,8 @@ auto frr::simd(std::uint32_t *const data,
   const __m256d x_step   = _mm256_set1_pd(delta.x * 4.0);
   const __m256d x_origin = _mm256_add_pd(_mm256_set1_pd(TL.x),
                                          _mm256_mul_pd(x_delta, _mm256_set_pd(3.0, 2.0, 1.0, 0.0)));
-  __m256d       y0       = _mm256_set1_pd(TL.y);
-  for (std::size_t row{}; row < frr::height; ++row)
+  __m256d       y0       = _mm256_set1_pd(TL.y + row_start * delta.y);
+  for (std::size_t row{row_start}; row < row_end; ++row)
   {
     __m256d x0 = x_origin;
     for (std::size_t col{}; col < frr::width; col += 4)
